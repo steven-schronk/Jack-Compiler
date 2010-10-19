@@ -1,0 +1,10 @@
+Jack Compiler
+
+This is a compiler for the Jack computer language.
+
+This compiler is needed for the book "Elements of Computing Systems:
+Building a Modern Computer from First Principles." by Noam Nisan and Shimon Schocken.
+
+NOTE: THE BLESSED VERSION OF THIS PROJECT IS AT GITHUB.
+
+http://github.com/steven-schronk/Jack-Compiler
