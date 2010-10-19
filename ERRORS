@@ -3,3 +3,17 @@ This is a complete and detailed list of errors for the Jack Compiler.
 It should provide assistance to the user in the correct and efficient use of the software.
 
 The errors are listed in order. Each error entry contains a detailed explanation of the error as well as optional tips for reducing or eliminating its occurrence.
+
+1: No Input Files.
+	Compiler does not have a file to compile.
+	Retry command with a filename as an argument.
+
+2: Too Many Files Listed.
+	Compiler may only work on one file at a time in this version.
+	Retry command with only one argument.
+
+3: Cannot Open Input (Source) File.
+	There are several factors that can cause this error:
+		A. File does not exist on system.
+		B. Your account does not have permission to open file.
+		C. File locked by either the operating system or another program.
