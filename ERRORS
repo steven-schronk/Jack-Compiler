@@ -17,3 +17,17 @@ The errors are listed in order. Each error entry contains a detailed explanation
 		A. File does not exist on system.
 		B. Your account does not have permission to open file.
 		C. File locked by either the operating system or another program.
+
+4: Filename Extension Not Correct.
+	Compiler only accepts file extension "jack".
+	File extension must be in lower case.
+
+5: Input File Has No Extension.
+	Input filename does not include a period.
+	Example:  filename.jack
+
+6: Cannot Open Output (Object) File.
+	There are several factors that can cause this error:
+		A. File does not exist on system.
+		B. Your account does not have permission to open file.
+		C. File locked by either the operating system or another program.
