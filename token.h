@@ -1,13 +1,13 @@
 #ifndef TOKEN_H_
 #define TOKEN_H_
 
-enum {
+typedef enum {
 	CLASS, METHOD, FUNCTION, CONSTRUCTOR, INT, BOOLEAN,
 	CHAR, VOID, VAR, STATIC, FIELD, LET, DO, IF, ELSE,
-	WHILE, RETURN, TRUE, FALSE, NULL, THIS
+	WHILE, RETURN, TRUE, FALSE, THIS
 } ttype;
 
-enum { KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST } token;
+typedef enum { KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST } token;
 
 /*
 * Look at source stream and determine if more tokens are available.

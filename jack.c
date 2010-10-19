@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 #include "error.h"
 #include "jack.h"
+#include "token.h"
 
 struct settings settings;
 
@@ -21,9 +23,11 @@ void settings_init(void)
 
 int main(int argc, char *argv[])
 {
-	int c, file_loc = 1;
+	int i, size, file_loc = 1;
 	char FilenameBuff[80];
-	char * pC;
+	char ch;
+	char *pC;
+	char *pSource = NULL;
 	FILE *fpSource, *fpDest;
 
 	if(argc < 2) { exit_error(1, "No Input Files."); usage(); }
@@ -34,7 +38,7 @@ int main(int argc, char *argv[])
 	if(argv[1][0] == '-')
 	{
 		file_loc = 2;
-		while(-1 != (c = getopt(argc, argv,
+		while(-1 != (i = getopt(argc, argv,
 			"-v" /* verbose output to stdout */
 			"-t" /* print final hash table to stdout */
 			"-c" /* print code output to stdout - without comments */
@@ -43,7 +47,7 @@ int main(int argc, char *argv[])
 			"--help" /*print out usage statement */
 		))) {
 
-			switch (c)
+			switch (i)
 			{
 				case 'v':
 					settings.verbose = 1;
@@ -78,6 +82,30 @@ int main(int argc, char *argv[])
 	{
 		exit_error(6, "Cannot Open Output (Object) File");
 	}
+
+	/* get one line at a time and load into buffer */
+	/* getline(fpSource); */
+
+	fseek(fpSource, 0, SEEK_END); /* seek to end of file */
+	size = ftell(fpSource); /* get current file pointer */
+	fseek(fpSource, 0, SEEK_SET); /* seek back to beginning of file */
+	/* proceed with allocating memory and reading the file */
+	pSource = malloc((sizeof(char) * size)+1);
+
+	if(pSource == NULL) { exit_error(7, "Cannot Allocate Memory For Source"); }
+
+	i = 0;
+	while(i < size)
+	{
+		pSource[i] = getc(fpSource);
+		i++;
+	}
+	pSource[i] = '\0';
+
+
+	/* remove all whitespace from source */
+
+	printf("%s", pSource);
 
 	return 0;
 }
