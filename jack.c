@@ -25,7 +25,6 @@ int main(int argc, char *argv[])
 {
 	int i, size, file_loc = 1;
 	char FilenameBuff[80];
-	char ch;
 	char *pC;
 	char *pSource = NULL;
 	FILE *fpSource, *fpDest;
@@ -59,7 +58,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if((fpSource = fopen(argv[file_loc], "r")) == NULL) {
+	if((fpSource = fopen(argv[file_loc], "r")) == NULL)
+	{
 		exit_error(3, "Cannot Open Input (Source) File");
 	}
 
@@ -83,9 +83,6 @@ int main(int argc, char *argv[])
 		exit_error(6, "Cannot Open Output (Object) File");
 	}
 
-	/* get one line at a time and load into buffer */
-	/* getline(fpSource); */
-
 	fseek(fpSource, 0, SEEK_END); /* seek to end of file */
 	size = ftell(fpSource); /* get current file pointer */
 	fseek(fpSource, 0, SEEK_SET); /* seek back to beginning of file */
@@ -102,10 +99,14 @@ int main(int argc, char *argv[])
 	}
 	pSource[i] = '\0';
 
+	pC = pSource; /* move to beginning of source code */
 
-	/* remove all whitespace from source */
-
-	printf("%s", pSource);
+	while(has_more_tokens(pC))
+	{
+		putchar(*pC);
+		fflush(stdout);
+		pC = advance(pC);
+	}
 
 	return 0;
 }

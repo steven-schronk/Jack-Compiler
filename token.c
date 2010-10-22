@@ -1,15 +1,52 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "token.h"
 
-int has_more_tokens()
+#define SYMBOLS "{}()[].,;+-*/&|<>=~"
+#define SPACES "\t\n\r "
+
+int has_more_tokens(char *pC)
 {
-	return 0;
+	if(*(pC+1) != EOF)
+	{
+		return TRUE;
+	} else {
+		return FALSE;
+		}
 }
 
-
-void advance(void)
+char *advance(char *pC)
 {
+	char ch = NULL;
+	/* skip past C++ style comments */
+	if(*pC == '/' && *(pC+1) == '/')
+	{
+		while(*pC != '\n' && *pC != EOF)
+			{ pC++; }
+	}
+	if(*pC == '\n') { pC++; }
 
+	/* skip past C style comments */
+	if(*pC == '/' && *(pC+1) == '*')
+	{
+		while(*(pC+1) != '/')
+		{
+			pC++;
+		}
+		pC += 2; /* move past end of comment */
+	}
+
+	/* advance past spaces and newline chars */
+	ch = *pC;
+	while((strchr(SPACES, ch)) != NULL)
+	{
+		pC++;
+		ch = *pC;
+	}
+
+	return pC;
 }
 
 

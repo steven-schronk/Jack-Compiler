@@ -13,13 +13,13 @@ typedef enum { KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST } token;
 * Look at source stream and determine if more tokens are available.
 * Returns > 0 if more are found and 0 if none found.
 */
-int has_more_tokens();
+int has_more_tokens(char *pC);
 
 /*
  * Move to next token in source stream.
  * Should be called only if has_more_tokens is true.
  */
-void advance(void);
+char *advance(char *pC);
 
 /*
  * Returns type of current token.
