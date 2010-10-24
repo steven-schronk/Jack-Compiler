@@ -28,6 +28,8 @@ int main(int argc, char *argv[])
 	char *pC = NULL; /* pointer to code */
 	char pT[1000];  /* pointer to token */
 	char *pSource = NULL;
+	token tk;
+	ttype ttyp;
 	FILE *fpSource, *fpDest;
 
 	if(argc < 2) { exit_error(1, "No Input Files."); usage(); }
@@ -105,7 +107,12 @@ int main(int argc, char *argv[])
 	while(has_more_tokens(pC))
 	{
 		pC = advance(pC, pT);
-			token_type(pT);
+			tk = token_type(pT);
+			if(tk == KEYWORD)
+			{
+				ttyp = keyword(pT);
+				printf("Token Type: %d ->", ttyp);
+			}
 			printf("%s\n", pT);
 			fflush(stdout);
 	}

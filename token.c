@@ -5,8 +5,12 @@
 
 #include "token.h"
 
-#define SYMBOLS "{}()[].,;+-*/&|<>=~"
-#define SPACES "\t\n\r "
+char *keywords[] =
+{
+		 "boolean","char", "class", "constructor", "do", "else",
+		 "false", "field", "function", "if", "int", "let", "method",
+		 "null", "return", "static", "this", "true", "var", "void", "while"
+};
 
 int has_more_tokens(char *pC)
 {
@@ -78,9 +82,13 @@ char *advance(char *pC, char pT[])
 
 token token_type(char pT[])
 {
-	token t;
+	token t = IDENTIFIER;
 	int i = 0, j = 0;;
+
+	/* check token for symbols */
 	if(strchr(SYMBOLS, pT[0]) != NULL) { t = SYMBOL; }
+
+	/* check token for integer constants */
 	while(pT[i] != '\0')
 	{
 		if(isdigit(pT[i]) == 0)
@@ -91,13 +99,26 @@ token token_type(char pT[])
 		i++;
 	}
 	if(j == 0) { t = INT_CONST; }
+
+	/* check token for keywords */
+	i = 0; j = 0;
+	do {
+		j = strcmp(keywords[i], pT);
+		i++;
+	} while ((j != 0) && (i < KEYWORD_COUNT));
+
+	if(j == 0) { t = KEYWORD; }
 	return t;
 }
 
 
- ttype keyword(void)
+ ttype keyword(char pT[])
 {
-	return KEYWORD;
+	 int i = 0;
+	 do {
+		 i++;
+	 } while (strcmp(pT, keywords[i]) < 0 && i < KEYWORD_COUNT);
+	return i;
 }
 
 
@@ -114,9 +135,9 @@ char *identifier(char *str)
 }
 
 
-int int_val()
+int int_val(char pT[])
 {
-	return 0;
+	return atoi(pT);
 }
 
 

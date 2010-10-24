@@ -1,10 +1,14 @@
 #ifndef TOKEN_H_
 #define TOKEN_H_
 
+#define KEYWORD_COUNT 21
+#define SYMBOLS "{}()[].,;+-*/&|<>=~"
+#define SPACES "\t\n\r "
+
 typedef enum {
-	CLASS, METHOD, FUNCTION, CONSTRUCTOR, INT, BOOLEAN,
-	CHAR, VOID, VAR, STATIC, FIELD, LET, DO, IF, ELSE,
-	WHILE, RETURN, TRUE, FALSE, THIS
+	BOOLEAN, CHAR, CLASS, CONSTRUCTOR, DO, ELSE,
+	FALSE, FIELD, FUNCTION, IF, INT, LET, METHOD,
+	 NUL, RETURN, STATIC, THIS, TRUE, VAR, VOID, WHILE
 } ttype;
 
 typedef enum { KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST } token;
@@ -32,7 +36,7 @@ token token_type(char pT[]);
  * Returns keyword of current token.
  * Called only when token_type is KEYWORD.
  */
-ttype keyword(void);
+ttype keyword(char pT[]);
 
 /*
  * Returns character which is the current token.
@@ -50,7 +54,7 @@ char *identifier(char *str);
  * Returns integer value of the current token.
  * Called only when token_type is INT_CONST.
  */
-int int_val();
+int int_val(char pT[]);
 
 /*
  * Returns a pointer to an array of char, without double quotes.
