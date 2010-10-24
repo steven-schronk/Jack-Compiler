@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	int i, size, file_loc = 1;
 	char FilenameBuff[80];
 	char *pC = NULL; /* pointer to code */
-	char *pT = NULL; /* pointer to token */
+	char pT[1000];  /* pointer to token */
 	char *pSource = NULL;
 	FILE *fpSource, *fpDest;
 
@@ -105,11 +105,8 @@ int main(int argc, char *argv[])
 	while(has_more_tokens(pC))
 	{
 		pC = advance(pC, pT);
-		if(pC != NULL)
-		{
-			printf("%s\n", pC);
+			printf("%s\n", pT);
 			fflush(stdout);
-		}
 	}
 
 	return 0;

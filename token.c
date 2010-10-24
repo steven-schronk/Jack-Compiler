@@ -17,11 +17,10 @@ int has_more_tokens(char *pC)
 	}
 }
 
-char *advance(char *pC, char *pT)
+char *advance(char *pC, char pT[])
 {
 	char ch;
 	int cont; /* continue */
-	free(pT);
 	do {
 		cont = 0;
 		/* skip past C++ style comments */
@@ -53,6 +52,28 @@ char *advance(char *pC, char *pT)
 		if(*pC == '/' && *(pC+1) == '*') { cont++; }
 
 	} while (cont);
+
+	/* test for sybol - copy to buffer */
+	ch = *pC;
+	if(strchr(SYMBOLS, ch) != NULL)
+	{
+		pT[0] = ch;
+		pT[1] = '\0';
+		pC++;
+		return pC;
+	}
+
+	/* should be at beginning of token - copy to buffer */
+
+	cont = 0;
+	while(((strchr(SPACES, ch)) == NULL) && ((strchr(SYMBOLS, ch)) == NULL))
+	{
+		pT[cont] = *pC;
+		pC++;
+		ch = *pC;
+		cont++;
+	}
+	pT[cont] = '\0';
 	return pC;
 }
 

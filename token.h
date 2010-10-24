@@ -21,7 +21,7 @@ int has_more_tokens(char *pC);
  * array of char that contains the token.
  * Should be called only if has_more_tokens is true.
  */
-char *advance(char *pC, char *pT);
+char *advance(char *pC, char pT[]);
 
 /*
  * Returns type of current token.
