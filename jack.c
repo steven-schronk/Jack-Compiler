@@ -105,6 +105,7 @@ int main(int argc, char *argv[])
 	while(has_more_tokens(pC))
 	{
 		pC = advance(pC, pT);
+			token_type(pT);
 			printf("%s\n", pT);
 			fflush(stdout);
 	}

@@ -26,13 +26,13 @@ char *advance(char *pC, char pT[]);
 /*
  * Returns type of current token.
  */
-ttype token_type(void);
+token token_type(char pT[]);
 
 /*
  * Returns keyword of current token.
  * Called only when token_type is KEYWORD.
  */
-token keyword(void);
+ttype keyword(void);
 
 /*
  * Returns character which is the current token.

@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -26,7 +27,6 @@ char *advance(char *pC, char pT[])
 		/* skip past C++ style comments */
 		if(*pC == '/' && *(pC+1) == '/')
 		{
-			/* TODO: use string lib here */
 			pC = strchr(pC, '\n');
 		}
 
@@ -36,7 +36,6 @@ char *advance(char *pC, char pT[])
 			pC++;
 			pC = strchr(pC, '/');
 			pC++;
-			/* pC += 2; move past end of comment */
 		}
 
 		/* advance past spaces and newline chars */
@@ -53,7 +52,7 @@ char *advance(char *pC, char pT[])
 
 	} while (cont);
 
-	/* test for sybol - copy to buffer */
+	/* test for symbol - copy to buffer */
 	ch = *pC;
 	if(strchr(SYMBOLS, ch) != NULL)
 	{
@@ -64,7 +63,6 @@ char *advance(char *pC, char pT[])
 	}
 
 	/* should be at beginning of token - copy to buffer */
-
 	cont = 0;
 	while(((strchr(SPACES, ch)) == NULL) && ((strchr(SYMBOLS, ch)) == NULL))
 	{
@@ -78,13 +76,26 @@ char *advance(char *pC, char pT[])
 }
 
 
-ttype token_type(void)
+token token_type(char pT[])
 {
-	return FALSE;
+	token t;
+	int i = 0, j = 0;;
+	if(strchr(SYMBOLS, pT[0]) != NULL) { t = SYMBOL; }
+	while(pT[i] != '\0')
+	{
+		if(isdigit(pT[i]) == 0)
+		{
+			j++;
+			break;
+		}
+		i++;
+	}
+	if(j == 0) { t = INT_CONST; }
+	return t;
 }
 
 
-token keyword(void)
+ ttype keyword(void)
 {
 	return KEYWORD;
 }
