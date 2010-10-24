@@ -16,10 +16,12 @@ typedef enum { KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST } token;
 int has_more_tokens(char *pC);
 
 /*
- * Move to next token in source stream.
+ * Move source pointer to next token in source stream.
+ * pC is pointer to code and pT is pointer to an
+ * array of char that contains the token.
  * Should be called only if has_more_tokens is true.
  */
-char *advance(char *pC);
+char *advance(char *pC, char *pT);
 
 /*
  * Returns type of current token.
