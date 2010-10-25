@@ -26,6 +26,7 @@ char *advance(char *pC, char pT[])
 {
 	char ch;
 	int cont; /* continue */
+	int in_quote = 0; /* inside quotes? */
 	do {
 		cont = 0;
 		/* skip past C++ style comments */
@@ -67,14 +68,28 @@ char *advance(char *pC, char pT[])
 	}
 
 	/* should be at beginning of token - copy to buffer */
-	cont = 0;
-	while(((strchr(SPACES, ch)) == NULL) && ((strchr(SYMBOLS, ch)) == NULL))
+	cont = 0; in_quote = 0;
+	if(*pC == '"')
 	{
+		in_quote++; /* inside quote */
+		pC++;		/* skip quote itself */
+	}
+	while(TRUE)
+	{
+		if(in_quote){
+			if(*pC == '"') {  pC++; break; } /* found corresponding quote, stop */
+		} else {
+			if(((strchr(SPACES, ch)) != NULL) || ((strchr(SYMBOLS, ch)) != NULL))
+			{
+				break;
+			}
+		}
 		pT[cont] = *pC;
 		pC++;
 		ch = *pC;
 		cont++;
 	}
+
 	pT[cont] = '\0';
 	return pC;
 }
