@@ -14,7 +14,7 @@ char *keywords[] =
 
 int has_more_tokens(char *pC)
 {
-	if(*(pC+1) == EOF)
+	if(*(pC+1) == '\0')
 	{
 		return FALSE;
 	} else {
@@ -89,7 +89,6 @@ char *advance(char *pC, char pT[])
 		ch = *pC;
 		cont++;
 	}
-
 	pT[cont] = '\0';
 	return pC;
 }

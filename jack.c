@@ -18,7 +18,7 @@ void usage(void)
 
 void settings_init(void)
 {
-	settings.verbose = 0;
+	settings.tokens = 0;
 }
 
 int main(int argc, char *argv[])
@@ -41,18 +41,14 @@ int main(int argc, char *argv[])
 	{
 		file_loc = 2;
 		while(-1 != (i = getopt(argc, argv,
-			"-v" /* verbose output to stdout */
-			"-t" /* print final hash table to stdout */
-			"-c" /* print code output to stdout - without comments */
-			"-C" /* print code output to stdout - with comments */
-			"-x" /* print commands to stdout */
+			"-t" /* print tokenizer output */
 			"--help" /*print out usage statement */
 		))) {
 
 			switch (i)
 			{
-				case 'v':
-					settings.verbose = 1;
+				case 't':
+					settings.tokens = 1;
 					break;
 				case '-':
 					usage();
@@ -104,18 +100,33 @@ int main(int argc, char *argv[])
 
 	pC = pSource; /* move to beginning of source code */
 
-	while(has_more_tokens(pC))
+	if(settings.tokens) { printf("<tokens>\n"); }
+
+	while((has_more_tokens(pC) == TRUE))
 	{
 		pC = advance(pC, pT);
 			tk = token_type(pT);
-			if(tk == KEYWORD)
+			switch(tk)
 			{
-				ttyp = keyword(pT);
-				printf("Token Type: %d ->", ttyp);
+				case KEYWORD:
+					ttyp = keyword(pT);
+					if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+					break;
+				case STRING_CONST:
+					if(settings.tokens) { printf("\t<stringConstant>%s</stringConstant>\n", pT); }
+					break;
+				case INT_CONST:
+					if(settings.tokens) { printf("\t<integerConstant>%s</integerConstant>\n", pT); }
+					break;
+				case IDENTIFIER:
+					if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+					break;
+				case SYMBOL:
+					if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+					break;
 			}
-			printf("%s\n", pT);
-			fflush(stdout);
 	}
-
+	if(settings.tokens) { printf("</tokens>\n"); }
+	fflush(stdout);
 	return 0;
 }

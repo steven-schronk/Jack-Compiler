@@ -4,10 +4,7 @@
 struct settings
 {
 	int verbose;
-	int hash;
-	int code;
-	int comments;
-	int commands;
+	int tokens;
 };
 
 extern struct settings settings;
