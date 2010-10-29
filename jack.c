@@ -5,6 +5,7 @@
 
 #include "error.h"
 #include "jack.h"
+#include "parse.h"
 #include "token.h"
 
 struct settings settings;
