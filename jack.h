@@ -9,4 +9,6 @@ struct settings
 
 extern struct settings settings;
 
+struct settings settings;
+
 #endif

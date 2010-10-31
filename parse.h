@@ -3,13 +3,17 @@
 
 /*
 * Compiles a complete class.
+*
+* pS is pointer to beginning of source code.
+* pC is pointer to beginning of token where error occurred.
+* pT is pointer to token.
 */
-void parse_class();
+void parse_class(char *pS, char *pC, char pT[]);
 
 /*
 * Compiles a static declaration or a field declaration.
 */
-void parse_class_var_dec();
+void parse_class_var_dec(char *pC, char pT[]);
 
 /*
 * Compiles a complete method, function or constructor.

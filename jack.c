@@ -8,8 +8,6 @@
 #include "parse.h"
 #include "token.h"
 
-struct settings settings;
-
 void usage(void)
 {
 	printf("\n<options> <file>\n");
@@ -29,8 +27,6 @@ int main(int argc, char *argv[])
 	char *pC = NULL; /* pointer to code */
 	char pT[1000];  /* pointer to token */
 	char *pSource = NULL;
-	token tk;
-	ttype ttyp;
 	FILE *fpSource, *fpDest;
 
 	if(argc < 2) { exit_error(1, "No Input Files."); usage(); }
@@ -100,34 +96,6 @@ int main(int argc, char *argv[])
 	pSource[i] = '\0';
 
 	pC = pSource; /* move to beginning of source code */
-
-	if(settings.tokens) { printf("<tokens>\n"); }
-
-	while((has_more_tokens(pC) == TRUE))
-	{
-		pC = advance(pC, pT);
-			tk = token_type(pT);
-			switch(tk)
-			{
-				case KEYWORD:
-					ttyp = keyword(pT);
-					if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
-					break;
-				case STRING_CONST:
-					if(settings.tokens) { printf("\t<stringConstant>%s</stringConstant>\n", pT); }
-					break;
-				case INT_CONST:
-					if(settings.tokens) { printf("\t<integerConstant>%s</integerConstant>\n", pT); }
-					break;
-				case IDENTIFIER:
-					if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
-					break;
-				case SYMBOL:
-					if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-					break;
-			}
-	}
-	if(settings.tokens) { printf("</tokens>\n"); }
-	fflush(stdout);
+	parse_class(pSource, pC, pT);
 	return 0;
 }

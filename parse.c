@@ -1,14 +1,42 @@
-#include "parse.h";
+#include <ctype.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
+#include "error.h"
+#include "jack.h"
+#include "parse.h"
+#include "token.h"
 
-void parse_class()
+void parse_class(char *pS, char *pC, char pT[])
 {
+	token tk;
+	ttype ttyp;
+	if(settings.tokens) { printf("<class>\n"); }
 
+	while(has_more_tokens(pC))
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+
+		if(tk == KEYWORD) {
+			ttyp = keyword(pT);
+			if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+		} else if (tk == IDENTIFIER){
+			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+		} else if (tk == SYMBOL){
+			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		} else {
+			compiler_error(1, "Incorrect Token Type", pS, pC);
+		}
+	}
+
+	if(settings.tokens) { printf("</class>\n"); }
 }
 
-
-void parse_class_var_dec()
+void parse_class_var_dec(char *pC, char pT[])
 {
+
 
 }
 

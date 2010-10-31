@@ -2,7 +2,7 @@
 #define ERROR_H_
 
 /*
-* Prints error to stdout along with error number and string desc of problem.
+* Prints error to stdout along with error number and string description of problem.
 * Exits program without recourse.
 */
 void exit_error(const int err_num, const char *err_msg);
@@ -19,7 +19,19 @@ void exit_error(const int err_num, const char *err_msg);
 void warning_error(const int err_num, const char *err_msg);
 
 /*
-* Prints line number that error/warning occured for user.
+* Compiler error informs user of poorly formated code.
+* Prints line of code error occurs on and gives message about what went wrong.
+*
+* comp_num is unique number for compiler error.
+* err_msg is unique text message for user.
+* pS is pointer to beginning of source code.
+* pC is pointer to beginning of token where error occurred.
+*
+*/
+void compiler_error(const int comp_num, const char *err_msg, char *pS, char *pC);
+
+/*
+* Prints line number that error/warning occurred for user.
 */
 void line_notification(const int line_num);
 
