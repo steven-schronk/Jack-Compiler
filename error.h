@@ -26,9 +26,10 @@ void warning_error(const int err_num, const char *err_msg);
 * err_msg is unique text message for user.
 * pS is pointer to beginning of source code.
 * pC is pointer to beginning of token where error occurred.
+* pT is current token array.
 *
 */
-void compiler_error(const int comp_num, const char *err_msg, char *pS, char *pC);
+void compiler_error(const int comp_num, const char *err_msg, char *pS, char *pC, char pT[]);
 
 /*
 * Prints line number that error/warning occurred for user.

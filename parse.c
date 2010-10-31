@@ -26,23 +26,48 @@ void parse_class(char *pS, char *pC, char pT[])
 			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
 		} else if (tk == SYMBOL){
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(pT[0] == '{')
+			{
+				parse_subroutine(pS, pC, pT);
+			}
 		} else {
-			compiler_error(1, "Incorrect Token Type", pS, pC);
+			compiler_error(1, "Incorrect Token Type", pS, pC, pT);
 		}
 	}
 
 	if(settings.tokens) { printf("</class>\n"); }
 }
 
-void parse_class_var_dec(char *pC, char pT[])
+void parse_class_var_dec(char *pS, char *pC, char pT[])
 {
-
-
+	pS++;
+	pT++;
+	pC++;
 }
 
-void parse_subroutine()
+void parse_subroutine(char *pS, char *pC, char pT[])
 {
+	token tk;
+	if(settings.tokens) { printf("<subroutineDec>\n"); }
+	while(has_more_tokens(pC))
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
 
+		if(tk == KEYWORD) {
+			/*if()*/
+			if(strcmp(pT, "constructor") == 0 || strcmp(pT, "function") == 0 || strcmp(pT, "method") == 0)
+			{
+
+			} else {
+				printf("\nCURRENT TOKEN: ->%s<-\n\n", pT);
+				compiler_error(1, "Incorrect Token Type", pS, pC, pT);
+			}
+		} else {
+			compiler_error(1, "Incorrect Token Type", pS, pC, pT);
+		}
+	}
+	if(settings.tokens) { printf("</subroutineDec>\n"); }
 }
 
 void parse_params()

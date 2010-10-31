@@ -13,12 +13,12 @@ void parse_class(char *pS, char *pC, char pT[]);
 /*
 * Compiles a static declaration or a field declaration.
 */
-void parse_class_var_dec(char *pC, char pT[]);
+void parse_class_var_dec(char *pS, char *pC, char pT[]);
 
 /*
 * Compiles a complete method, function or constructor.
 */
-void parse_subroutine();
+void parse_subroutine(char *pS, char *pC, char pT[]);
 
 /*
 * Compiles a (possibly empty) parameter list.
