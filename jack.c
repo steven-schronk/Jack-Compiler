@@ -8,9 +8,9 @@
 #include "parse.h"
 #include "token.h"
 
-char *pC = NULL; /* pointer to all code from file */
-char pT[1000];   /* pointer to token */
-char *pS = NULL; /* pointer to beginning of next token */
+char *pC = NULL; /* pointer to code */
+char pT[1000];  /* pointer to token */
+char *pS = NULL;
 
 void usage(void)
 {
@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 {
 	int i, size, file_loc = 1;
 	char FilenameBuff[80];
+
 	FILE *fpSource, *fpDest;
 
 	if(argc < 2) { exit_error(1, "No Input Files."); usage(); }

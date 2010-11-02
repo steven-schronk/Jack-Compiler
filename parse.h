@@ -3,14 +3,15 @@
 
 extern char *pS;
 extern char *pC;
-extern char pT[1000];
+extern char pT[];
+
+/*
+extern enum token tk;
+extern enum ttype ttyp;
+*/
 
 /*
 * Compiles a complete class.
-*
-* pS is pointer to beginning of source code.
-* pC is pointer to beginning of token where error occurred.
-* pT is pointer to token.
 */
 void parse_class();
 

@@ -34,3 +34,33 @@ The errors are listed in order. Each error entry contains a detailed explanation
 
 7: Cannot Allocate Memory For Source.
 	Operating system could not allocate enough free memory for source file.
+
+8: Incorrect Token Found: Must be 'constructor', 'function', or 'method'.
+	Parser required one of these keywords at this location.
+	Could be caused by missing token or spelling error of token.
+	
+9: Could Not Complete Parse Tree of Subroutine. Incomplete Program.
+	Parser found beginning of subroutine but could not complete construct
+	before running out of source code.
+
+10: Incorrect Token Type. Looking for Keyword or Identifier.
+	Token at this location is of an incorrect type. At this location only a keyword or
+	identifier is allowed.
+
+11: Name of Function Must be an Identifier.
+	Token should be the name of this function. At this location another type of
+	token was found.
+
+12: Parameter List for Function Missing.
+	Beginning parenthesis for the parameter list is missing from source.
+
+13: Could Not Complete Parameter List for Function.
+	Found beginning of parameter list, but could not find the corresponding parenthesis.
+
+14: Incorrect Token Type in Parameter List. Looking for Datatype name.
+	Acceptable datatypes are 'int', 'char' and 'boolean'.
+
+15: Incorrect Token Type in Parameter List. Looking for Variable Identifier.
+	Proper identifiers must not start with a symbol or a keyword.
+
+16: Incorrect Token Type in Parameter List. Looking for Comma or Parenthesis.

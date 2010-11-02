@@ -37,13 +37,17 @@ void compiler_error(const int comp_num, const char *err_msg, char *pS, char *pC,
 		pC--;
 	} while (strncmp(pT, pC, token_len) != 0);
 
-	while(pTemp > pS && *pTemp != '\n') /* looking for start of current line */
+	/* set pTemp to beginning of current line */
+	/* count tabs and spaces as you go */
+	while(pTemp > pS && *pTemp != '\n')
 	{
 		if(*pTemp == '\t') { tb_count++; }
 		else { sp_count++; }
 		pTemp--;
 	}
 	sp_count = pC - pTemp;
+
+	/* count line number to beginning of file print for user later */
 	while(pS <= pC)
 	{
 		if(*pC == '\n') { line_num++; }
@@ -51,7 +55,12 @@ void compiler_error(const int comp_num, const char *err_msg, char *pS, char *pC,
 	}
 
 	pTemp++;
-	while(*pTemp != '\n') { putc(*pTemp, stderr); pTemp++; }
+	/* print last line to stderr */
+	while((*pTemp != '\n') && (*pTemp != '\0'))
+	{
+		putc(*pTemp, stderr);
+		pTemp++;
+	}
 	fprintf(stderr, "\n");
 
 	/* print arrow pointing to token compiler cannot comprehend */
