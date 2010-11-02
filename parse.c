@@ -8,7 +8,7 @@
 #include "parse.h"
 #include "token.h"
 
-void parse_class(char *pS, char *pC, char pT[])
+void parse_class()
 {
 	token tk;
 	ttype ttyp;
@@ -38,14 +38,12 @@ void parse_class(char *pS, char *pC, char pT[])
 	if(settings.tokens) { printf("</class>\n"); }
 }
 
-void parse_class_var_dec(char *pS, char *pC, char pT[])
+void parse_class_var_dec()
 {
-	pS++;
-	pT++;
-	pC++;
+
 }
 
-void parse_subroutine(char *pS, char *pC, char pT[])
+void parse_subroutine()
 {
 	token tk;
 	if(settings.tokens) { printf("<subroutineDec>\n"); }

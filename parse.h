@@ -1,6 +1,10 @@
 #ifndef PARSE_H_
 #define PARSE_H_
 
+extern char *pS;
+extern char *pC;
+extern char pT[1000];
+
 /*
 * Compiles a complete class.
 *
@@ -8,17 +12,17 @@
 * pC is pointer to beginning of token where error occurred.
 * pT is pointer to token.
 */
-void parse_class(char *pS, char *pC, char pT[]);
+void parse_class();
 
 /*
 * Compiles a static declaration or a field declaration.
 */
-void parse_class_var_dec(char *pS, char *pC, char pT[]);
+void parse_class_var_dec();
 
 /*
 * Compiles a complete method, function or constructor.
 */
-void parse_subroutine(char *pS, char *pC, char pT[]);
+void parse_subroutine();
 
 /*
 * Compiles a (possibly empty) parameter list.

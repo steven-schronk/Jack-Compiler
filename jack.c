@@ -8,6 +8,10 @@
 #include "parse.h"
 #include "token.h"
 
+char *pC = NULL; /* pointer to all code from file */
+char pT[1000];   /* pointer to token */
+char *pS = NULL; /* pointer to beginning of next token */
+
 void usage(void)
 {
 	printf("\n<options> <file>\n");
@@ -24,9 +28,6 @@ int main(int argc, char *argv[])
 {
 	int i, size, file_loc = 1;
 	char FilenameBuff[80];
-	char *pC = NULL; /* pointer to code */
-	char pT[1000];  /* pointer to token */
-	char *pSource = NULL;
 	FILE *fpSource, *fpDest;
 
 	if(argc < 2) { exit_error(1, "No Input Files."); usage(); }
@@ -83,19 +84,19 @@ int main(int argc, char *argv[])
 	size = ftell(fpSource); /* get current file pointer */
 	fseek(fpSource, 0, SEEK_SET); /* seek back to beginning of file */
 	/* proceed with allocating memory and reading the file */
-	pSource = malloc((sizeof(char) * size)+1);
+	pS = malloc((sizeof(char) * size)+1);
 
-	if(pSource == NULL) { exit_error(7, "Cannot Allocate Memory For Source"); }
+	if(pS == NULL) { exit_error(7, "Cannot Allocate Memory For Source"); }
 
 	i = 0;
 	while(i < size)
 	{
-		pSource[i] = getc(fpSource);
+		pS[i] = getc(fpSource);
 		i++;
 	}
-	pSource[i] = '\0';
+	pS[i] = '\0';
 
-	pC = pSource; /* move to beginning of source code */
-	parse_class(pSource, pC, pT);
+	pC = pS; /* move to beginning of source code */
+	parse_class(pS, pC, pT);
 	return 0;
 }
