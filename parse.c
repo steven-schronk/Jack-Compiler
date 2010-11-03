@@ -87,7 +87,26 @@ void parse_subroutine()
 										printf("\t\t<symbol>%s</symbol>\n", pT);
 										parse_params();
 
-										/* TODO: Continue Parsing subroutine */
+										/* look for end of parameter list */
+										if(*pT == ')')
+										{
+											/* look for opening brace for block */
+											if(has_more_tokens(pC) == TRUE)
+											{
+												pC = advance(pC, pT);
+												tk = token_type(pT);
+												if(*pT == '{')
+												{
+													parse_var_dec();
+													exit_error(0, "Exiting\n");
+												}
+											} else {
+												compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
+											}
+
+										} else {
+											compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
+										}
 
 									} else {
 										compiler_error(12, "Parameter List for Function Missing", pS, pC, pT);
@@ -95,7 +114,6 @@ void parse_subroutine()
 							} else {
 								compiler_error(11, "Name of Function Must be an Identifier", pS, pC, pT);
 							}
-
 
 						} else {
 							compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
@@ -175,7 +193,64 @@ void parse_params()
 
 void parse_var_dec()
 {
-
+	token tk;
+	int i = 0;
+	/* look for token named 'var' */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+		if(strcmp(pT, "var") == 0)
+		{
+			printf("\t<varDec>%s</varDec>\n", pT);
+			/* look for variable data type */
+			if(has_more_tokens(pC) == TRUE)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+				if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0 || strcmp(pT, "Array") == 0)
+				{
+					printf("\t<identifier>%s</identifier>\n", pT);
+					/* look for identifier(s) for variable(s) */
+					do {
+						i = 0;
+						if(has_more_tokens(pC) == TRUE)
+						{
+							pC = advance(pC, pT);
+							tk = token_type(pT);
+							if(tk == IDENTIFIER)
+							{
+								printf("\t<identifier>%s</identifier>\n", pT);
+								if(has_more_tokens(pC) == TRUE)
+								{
+									pC = advance(pC, pT);
+									tk = token_type(pT);
+									if((tk == SYMBOL) && (*pT == ';' || *pT == ',')) {
+										if(*pT == ',') { i++; }
+										printf("\t<symbol>%s</symbol>\n", pT);
+										if(i == 0)
+										{
+											parse_var_dec();
+										}
+									} else {
+										compiler_error(18, "Improperly Terminated Variable Declaration", pS, pC, pT);
+									}
+								} else {
+									compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
+								}
+							}
+						} else {
+							compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
+						}
+					} while (i > 0);
+				} else {
+					compiler_error(17, "Incorrect Data Type in Variable Declaration", pS, pC, pT);
+				}
+			}
+		} else { return; }
+	} else {
+		compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
+	}
 }
 
 void parse_statements()

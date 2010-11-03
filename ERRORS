@@ -64,3 +64,12 @@ The errors are listed in order. Each error entry contains a detailed explanation
 	Proper identifiers must not start with a symbol or a keyword.
 
 16: Incorrect Token Type in Parameter List. Looking for Comma or Parenthesis.
+
+17: Could Not Complete Variable List of Subroutine. Incomplete Program.
+	Subroutine was started and not completed in source file.
+
+18: Incorrect Data Type in Variable Declaration
+	Datatype listed in declaration is not valid. Acceptable datatypes are 'int', 'char',
+	'boolean' and 'Array'.
+
+19: Improperly Terminated Variable Declaration
