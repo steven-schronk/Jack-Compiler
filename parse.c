@@ -150,40 +150,42 @@ void parse_params()
 			if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0)
 			{
 				if(settings.tokens) { printf("\t\t<keyword>%s</keyword>\n", pT); }
-				/* look for identifier for this parameter */
-				if(has_more_tokens(pC) == TRUE)
-				{
-					pC = advance(pC, pT);
-					tk = token_type(pT);
-					if(tk == IDENTIFIER) {
-						if(settings.tokens) { printf("\t\t<identifier>%s</identifier>\n", pT); }
-						/* are there more parameters? */
-						if(has_more_tokens(pC) == TRUE)
-						{
-							pC = advance(pC, pT);
-							tk = token_type(pT);
-							if(*pT == ',') {
-								parse_params();
-							} else if (*pT == ')') { /* exit parse_params */
-								if(settings.tokens) { printf("\t\t</parameterList>\n"); }
-								return;
-							} else {
-								compiler_error(16, "Incorrect Token Type in Parameter List. Looking for Comma or Parenthesis.", pS, pC, pT);
-							}
-						} else {
-							compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
-						}
-
-					} else {
-						compiler_error(15, "Incorrect Token Type in Parameter List. Looking for Variable Identifier.", pS, pC, pT);
-					}
-				} else {
-					compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
-				}
 			} else {
 				compiler_error(14, "Incorrect Token Type in Parameter List. Looking for Datatype name.", pS, pC, pT);
 			}
 		} else if(tk == SYMBOL && *pT == ')') { if(settings.tokens) { printf("\t\t</parameterList>\n"); } return; }
+	} else {
+		compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
+	}
+
+	/* look for identifier for this parameter */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+		if(tk == IDENTIFIER) {
+			if(settings.tokens) { printf("\t\t<identifier>%s</identifier>\n", pT); }
+
+		} else {
+			compiler_error(15, "Incorrect Token Type in Parameter List. Looking for Variable Identifier.", pS, pC, pT);
+		}
+	} else {
+		compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
+	}
+
+	/* are there more parameters? */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+		if(*pT == ',') {
+			parse_params();
+		} else if (*pT == ')') { /* exit parse_params */
+			if(settings.tokens) { printf("\t\t</parameterList>\n"); }
+			return;
+		} else {
+			compiler_error(16, "Incorrect Token Type in Parameter List. Looking for Comma or Parenthesis.", pS, pC, pT);
+		}
 	} else {
 		compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
 	}
