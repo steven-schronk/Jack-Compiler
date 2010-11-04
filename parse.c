@@ -48,100 +48,98 @@ void parse_subroutine()
 {
 	token tk;
 	if(settings.tokens) { printf("\t<subroutineDec>\n"); }
-	while(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == TRUE)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
 		if(tk == KEYWORD) {
 			if(strcmp(pT, "constructor") == 0 || strcmp(pT, "function") == 0 || strcmp(pT, "method") == 0)
 			{
-				printf("\t\t<keyword>%s</keyword>\n", pT);
-				/* look for return type of function */
-				if(has_more_tokens(pC) == TRUE)
-				{
-					pC = advance(pC, pT);
-					tk = token_type(pT);
-					if(tk == KEYWORD || tk == IDENTIFIER) {
-						if(strcmp(pT, "void") == 0)
-						{
-							printf("\t\t<keyword>%s</keyword>\n", pT);
-						} else {
-							printf("\t\t<type>%s</type>\n", pT);
-						}
-
-						/* look for subroutine name */
-						if(has_more_tokens(pC) == TRUE)
-						{
-							pC = advance(pC, pT);
-							tk = token_type(pT);
-							if(tk == IDENTIFIER)
-							{
-								printf("\t\t<identifier>%s</identifier>\n", pT);
-								/* look for symbol '(' that specifies beginning of parameter list */
-								if(has_more_tokens(pC) == TRUE)
-								{
-									pC = advance(pC, pT);
-									tk = token_type(pT);
-									if(*pT == '(')
-									{
-										printf("\t\t<symbol>%s</symbol>\n", pT);
-										parse_params();
-
-										/* look for end of parameter list */
-										if(*pT == ')')
-										{
-											/* look for opening brace for block */
-											if(has_more_tokens(pC) == TRUE)
-											{
-												pC = advance(pC, pT);
-												tk = token_type(pT);
-												if(*pT == '{')
-												{
-													parse_var_dec();
-													exit_error(0, "Exiting\n");
-												}
-											} else {
-												compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
-											}
-
-										} else {
-											compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
-										}
-
-									} else {
-										compiler_error(12, "Parameter List for Function Missing", pS, pC, pT);
-									}
-							} else {
-								compiler_error(11, "Name of Function Must be an Identifier", pS, pC, pT);
-							}
-
-						} else {
-							compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
-						}
-
-					} else {
-						compiler_error(10, "Incorrect Token Type. Looking for Keyword or Identifier.", pS, pC, pT);
-					}
-
-				} else {
-					compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
-				}
-
+				if(settings.tokens) { printf("\t\t<keyword>%s</keyword>\n", pT); }
 			} else {
-				compiler_error(1, "Incorrect Token Type", pS, pC, pT);
+				compiler_error(8, "Incorrect Token Found: Must be 'constructor', 'function', or 'method'", pS, pC, pT);
 			}
-		} else {
-			compiler_error(8, "Incorrect Token Found: Must be 'constructor', 'function', or 'method'", pS, pC, pT);
 		}
 	}
-	if(settings.tokens) { printf("</subroutineDec>\n"); }
+
+	/* look for return type of function */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+		if(tk == KEYWORD || tk == IDENTIFIER)
+		{
+			if(strcmp(pT, "void") == 0)
+			{
+				if(settings.tokens) { printf("\t\t<keyword>%s</keyword>\n", pT); }
+			} else {
+				if(settings.tokens) { printf("\t\t<type>%s</type>\n", pT); }
+			}
+		} else {
+			compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
+		}
+	} else {
+		compiler_error(1, "Incorrect Token Type", pS, pC, pT);
 	}
+
+	/* look for subroutine name */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+		if(tk == IDENTIFIER)
+		{
+			if(settings.tokens) { printf("\t\t<identifier>%s</identifier>\n", pT); }
+		} else {
+			compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
+		}
+	} else {
+		compiler_error(10, "Incorrect Token Type. Looking for Keyword or Identifier.", pS, pC, pT);
+	}
+
+	/* look for symbol '(' that specifies beginning of parameter list */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+		if(*pT == '(')
+		{
+			if(settings.tokens) { printf("\t\t<symbol>%s</symbol>\n", pT); }
+			parse_params();
+		} else {
+			compiler_error(12, "Parameter List for Function Missing", pS, pC, pT);
+		}
+	} else {
+		compiler_error(11, "Name of Function Must be an Identifier", pS, pC, pT);
+	}
+
+	/* look for end of parameter list */
+	if(*pT != ')')
+	{
+		compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
+	}
+
+	/* look for opening brace for block */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+		if(*pT == '{')
+		{
+			parse_var_dec();
+			exit_error(0, "Exiting\n");
+		}
+	} else {
+		compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
+	}
+
+	if(settings.tokens) { printf("</subroutineDec>\n"); }
 }
 
 void parse_params()
 {
 	token tk;
-	if(*pT == '(') { printf("\t\t<parameterList>\n");  }
+	if(*pT == '(') { if(settings.tokens) { printf("\t\t<parameterList>\n"); } }
 
 	/* look for datatype in parameter list */
 	if(has_more_tokens(pC) == TRUE)
@@ -151,14 +149,14 @@ void parse_params()
 		if(tk == KEYWORD) {
 			if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0)
 			{
-				printf("\t\t<keyword>%s</keyword>\n", pT);
+				if(settings.tokens) { printf("\t\t<keyword>%s</keyword>\n", pT); }
 				/* look for identifier for this parameter */
 				if(has_more_tokens(pC) == TRUE)
 				{
 					pC = advance(pC, pT);
 					tk = token_type(pT);
 					if(tk == IDENTIFIER) {
-						printf("\t\t<identifier>%s</identifier>\n", pT);
+						if(settings.tokens) { printf("\t\t<identifier>%s</identifier>\n", pT); }
 						/* are there more parameters? */
 						if(has_more_tokens(pC) == TRUE)
 						{
@@ -167,7 +165,7 @@ void parse_params()
 							if(*pT == ',') {
 								parse_params();
 							} else if (*pT == ')') { /* exit parse_params */
-								printf("\t\t</parameterList>\n");
+								if(settings.tokens) { printf("\t\t</parameterList>\n"); }
 								return;
 							} else {
 								compiler_error(16, "Incorrect Token Type in Parameter List. Looking for Comma or Parenthesis.", pS, pC, pT);
@@ -185,7 +183,7 @@ void parse_params()
 			} else {
 				compiler_error(14, "Incorrect Token Type in Parameter List. Looking for Datatype name.", pS, pC, pT);
 			}
-		} else if(tk == SYMBOL && *pT == ')') { printf("\t\t</parameterList>\n"); return; }
+		} else if(tk == SYMBOL && *pT == ')') { if(settings.tokens) { printf("\t\t</parameterList>\n"); } return; }
 	} else {
 		compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
 	}
@@ -202,7 +200,7 @@ void parse_var_dec()
 		tk = token_type(pT);
 		if(strcmp(pT, "var") == 0)
 		{
-			printf("\t<varDec>%s</varDec>\n", pT);
+			if(settings.tokens) { printf("\t<varDec>%s</varDec>\n", pT); }
 			/* look for variable data type */
 			if(has_more_tokens(pC) == TRUE)
 			{
@@ -210,7 +208,7 @@ void parse_var_dec()
 				tk = token_type(pT);
 				if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0 || strcmp(pT, "Array") == 0)
 				{
-					printf("\t<identifier>%s</identifier>\n", pT);
+					if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
 					/* look for identifier(s) for variable(s) */
 					do {
 						i = 0;
@@ -220,14 +218,14 @@ void parse_var_dec()
 							tk = token_type(pT);
 							if(tk == IDENTIFIER)
 							{
-								printf("\t<identifier>%s</identifier>\n", pT);
+								if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
 								if(has_more_tokens(pC) == TRUE)
 								{
 									pC = advance(pC, pT);
 									tk = token_type(pT);
 									if((tk == SYMBOL) && (*pT == ';' || *pT == ',')) {
 										if(*pT == ',') { i++; }
-										printf("\t<symbol>%s</symbol>\n", pT);
+										if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
 										if(i == 0)
 										{
 											parse_var_dec();
