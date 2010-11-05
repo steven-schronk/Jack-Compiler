@@ -68,8 +68,18 @@ The errors are listed in order. Each error entry contains a detailed explanation
 17: Could Not Complete Variable List of Subroutine. Incomplete Program.
 	Subroutine was started and not completed in source file.
 
-18: Incorrect Data Type in Variable Declaration
+18: Incorrect Data Type in Variable Declaration.
 	Datatype listed in declaration is not valid. Acceptable datatypes are 'int', 'char',
 	'boolean' and 'Array'.
 
-19: Improperly Terminated Variable Declaration
+19: Improperly Terminated Variable Declaration.
+
+20: Could Not Complete Let Statement Incomplete Program.
+	Foun beginning of let statement without, but could not find identifier or action.
+
+21: Identifier Required at this Location.
+	Let statement must be followd by an identifer.
+
+22: Symbol '=' or '[' Required at this Location.
+
+23: Incorrect Expression. Symbol '(' or '[' Required at this Location

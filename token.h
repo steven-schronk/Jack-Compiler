@@ -4,6 +4,8 @@
 #define KEYWORD_COUNT 21
 #define SYMBOLS "{}()[].,;+-*/&|<>=~"
 #define SPACES "\t\n\r "
+#define BINARY_OP "*+-&|<>="
+#define UNARY_OP "-~"
 
 typedef enum {
 	BOOLEAN, CHAR, CLASS, CONSTRUCTOR, DO, ELSE,

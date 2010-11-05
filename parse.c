@@ -35,7 +35,6 @@ void parse_class()
 			compiler_error(1, "Incorrect Token Type", pS, pC, pT);
 		}
 	}
-
 	if(settings.tokens) { printf("</class>\n"); }
 }
 
@@ -127,13 +126,18 @@ void parse_subroutine()
 		if(*pT == '{')
 		{
 			parse_var_dec();
-			exit_error(0, "Exiting\n");
 		}
 	} else {
 		compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
 	}
 
-	if(settings.tokens) { printf("</subroutineDec>\n"); }
+	/* look for 'let' keyword */
+	if(strcmp(pT, "let") == 0)
+	{
+		parse_let();
+	}
+
+	if(settings.tokens) { printf("\t</subroutineDec>\n"); }
 }
 
 void parse_params()
@@ -265,42 +269,113 @@ void parse_do()
 
 void parse_let()
 {
+	token tk;
+	if(settings.tokens) { printf("\t\t<letStatement>\n"); }
+	/* look for identifier name */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+		if(tk == IDENTIFIER)
+		{
+			if(settings.tokens) { printf("\t\t<identifier>%s</identifier>\n", pT); }
+		} else {
+			compiler_error(21, "Identifier Required at this Location", pS, pC, pT);
+		}
+	} else {
+		compiler_error(20, "Could Not Complete Let Statement Incomplete Program", pS, pC, pT);
+	}
 
+	/* look for '=' or '[' symbols */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+		if(tk == SYMBOL && (*pT == '[' || *pT == '='))
+		{
+			if(settings.tokens) { printf("\t\t<symbol>%s</symbol>\n", pT); }
+		} else {
+			compiler_error(22, "Symbol '=' or '[' Required at this Location", pS, pC, pT);
+		}
+	} else {
+		compiler_error(20, "Could Not Complete Let Statement Incomplete Program", pS, pC, pT);
+	}
+
+	parse_expression();
+
+	if(settings.tokens) { printf("\t\t</letStatement>\n"); }
+	exit_error(0, "Parsing Let");
 }
-
 
 void parse_while()
 {
 
 }
 
-
 void parse_return()
 {
 
 }
-
 
 void parse_if()
 {
 
 }
 
-
 void parse_expression()
 {
+	token tk;
+	/*do  */
+			/* if token is term */
+	 	 	 	 parse_term();
 
+	 	 	/* if token is operand */
+	 	 	 	/* print operand info */
+			/* get next token */
+	/* while token is term or operand */
 }
-
 
 void parse_term()
 {
+	token tk;
 
+	/* MIGHT USE A SWITCH OPERATOR FOR THESE OPTIONS */
+
+	/* if identifier */
+		/* print as identifier */
+		return;
+
+
+	/* get next token */
+
+	/* if '[' */
+		parse_expression();
+		/* get next token - should be ']' */
+		/* print symbol info */
+		return;
+
+	/* if '('  get next token */
+		parse_expr_lst();
+		/* get next token - should be ')' */
+		/* print symbol info */
+		return;
+
+	/* if '.' get next token */
+		/* should be an identifier */
+		/* if '('  get next token */
+		parse_expr_lst();
+		/* get next token - ')' */
+		return;
+
+	/* if unary op get next token */
+		parse_term();
 }
-
 
 void parse_expr_lst()
 {
 
+	/* while token is not ')' */
+			/* if token is a comma */
+			/* get next token */
+			parse_expression();
 }
-
