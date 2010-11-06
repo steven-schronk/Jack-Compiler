@@ -11,6 +11,8 @@
 char *pC = NULL; /* pointer to code */
 char pT[1000];  /* pointer to token */
 char *pS = NULL;
+token tk;
+ttype ttyp;
 
 void usage(void)
 {

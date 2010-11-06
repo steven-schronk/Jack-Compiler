@@ -1,14 +1,13 @@
 #ifndef PARSE_H_
 #define PARSE_H_
 
+#include "token.h"
+
 extern char *pS;
 extern char *pC;
 extern char pT[];
-
-/*
-extern enum token tk;
-extern enum ttype ttyp;
-*/
+extern token  tk;
+extern ttype ttyp;
 
 /*
 * Compiles a complete class.

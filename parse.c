@@ -10,9 +10,6 @@
 
 void parse_class()
 {
-	token tk;
-	ttype ttyp;
-
 	if(settings.tokens) { printf("<class>\n"); }
 
 	while(has_more_tokens(pC))
@@ -45,7 +42,6 @@ void parse_class_var_dec()
 
 void parse_subroutine()
 {
-	token tk;
 	if(settings.tokens) { printf("\t<subroutineDec>\n"); }
 	if(has_more_tokens(pC) == TRUE)
 	{
@@ -142,7 +138,6 @@ void parse_subroutine()
 
 void parse_params()
 {
-	token tk;
 	if(*pT == '(') { if(settings.tokens) { printf("\t\t<parameterList>\n"); } }
 
 	/* look for datatype in parameter list */
@@ -197,7 +192,6 @@ void parse_params()
 
 void parse_var_dec()
 {
-	token tk;
 	int i = 0;
 	/* look for token named 'var' */
 	if(has_more_tokens(pC) == TRUE)
@@ -269,36 +263,44 @@ void parse_do()
 
 void parse_let()
 {
-	token tk;
 	if(settings.tokens) { printf("\t\t<letStatement>\n"); }
-	/* look for identifier name */
 	if(has_more_tokens(pC) == TRUE)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
-		if(tk == IDENTIFIER)
-		{
-			if(settings.tokens) { printf("\t\t<identifier>%s</identifier>\n", pT); }
-		} else {
-			compiler_error(21, "Identifier Required at this Location", pS, pC, pT);
-		}
 	} else {
-		compiler_error(20, "Could Not Complete Let Statement Incomplete Program", pS, pC, pT);
+		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
 	}
 
-	/* look for '=' or '[' symbols */
+	if(*pT == '[') {
+		parse_expression();
+		if(has_more_tokens(pC) == TRUE)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+			if(*pT == ']') {
+				if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+			} else {
+				compiler_error(20, "Expression Not Terminated Correctly", pS, pC, pT);
+			}
+		} else {
+			compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
+		}
+	}
+
+	/* look for an '=' symbol */
 	if(has_more_tokens(pC) == TRUE)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
-		if(tk == SYMBOL && (*pT == '[' || *pT == '='))
-		{
-			if(settings.tokens) { printf("\t\t<symbol>%s</symbol>\n", pT); }
-		} else {
-			compiler_error(22, "Symbol '=' or '[' Required at this Location", pS, pC, pT);
-		}
 	} else {
-		compiler_error(20, "Could Not Complete Let Statement Incomplete Program", pS, pC, pT);
+		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
+	}
+
+	if(*pT == '=') {
+		if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
 	}
 
 	parse_expression();
@@ -324,58 +326,122 @@ void parse_if()
 
 void parse_expression()
 {
-	token tk;
-	/*do  */
-			/* if token is term */
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(20, "Could Not Complete Expression List. Incomplete Program", pS, pC, pT);
+	}
+	do {
+			if (*pT == '(')
+			{
+				if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+				printf("Parsing Expression List!\n");
+				parse_expression();
+			} else 	if(tk == IDENTIFIER) /* TODO: Also test for KeyworkConstant here */
+			{
+				if(settings.tokens) { printf("<identifier>%s</identifier>\n", pT); }
 	 	 	 	 parse_term();
-
-	 	 	/* if token is operand */
-	 	 	 	/* print operand info */
-			/* get next token */
-	/* while token is term or operand */
+			} else if (strchr(BINARY_OP, *pT) != NULL) {
+				if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+			}
+			if(has_more_tokens(pC) == TRUE)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+			} else {
+				compiler_error(20, "Could Not Complete Expression List. Incomplete Program", pS, pC, pT);
+			}
+	} while((strchr(BINARY_OP, *pT) != NULL) || tk == IDENTIFIER);
+	return;
 }
 
 void parse_term()
 {
-	token tk;
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+	}
 
-	/* MIGHT USE A SWITCH OPERATOR FOR THESE OPTIONS */
+	switch(*pT)
+	{
+		case '[':
+			if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+			parse_expression();
+			if(has_more_tokens(pC) == TRUE)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+				if(*pT == ']')
+				{
+					if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+				} else {
+					compiler_error(26, "Improperly Terminated Array Expression. Symbol ']' Required at this Location.", pS, pC, pT);
+				}
+			} else {
+				compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+			}
+			break;
+		case '(':
+			if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+			parse_expr_lst();
+			/*
+			if(has_more_tokens(pC) == TRUE)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+				if(*pT == ')')
+				{
+					if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+				} else {
+					compiler_error(27, "Improperly Terminated Subroutine Expression. Symbol ')' Required at this Location", pS, pC, pT);
+				}
+			} else {
+				compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+			}
+			*/
+			break;
+		case '.':
+			if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+			break;
+		default:
+			return;
+	}
 
-	/* if identifier */
-		/* print as identifier */
-		return;
-
-
-	/* get next token */
-
-	/* if '[' */
-		parse_expression();
-		/* get next token - should be ']' */
-		/* print symbol info */
-		return;
-
-	/* if '('  get next token */
-		parse_expr_lst();
-		/* get next token - should be ')' */
-		/* print symbol info */
-		return;
-
-	/* if '.' get next token */
-		/* should be an identifier */
-		/* if '('  get next token */
-		parse_expr_lst();
-		/* get next token - ')' */
-		return;
-
-	/* if unary op get next token */
-		parse_term();
+	if(strchr(UNARY_OP, *pT) != NULL)
+	{
+		if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+		if(has_more_tokens(pC) == TRUE)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+			parse_term();
+		} else {
+			compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+		}
+	}
 }
 
 void parse_expr_lst()
 {
-
-	/* while token is not ')' */
-			/* if token is a comma */
-			/* get next token */
+	while(*pT != ')')
+	{
+		if(*pT == ',')
+		{
+			if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
+			if(has_more_tokens(pC) == TRUE)
+			{
+					pC = advance(pC, pT);
+					tk = token_type(pT);
+			} else {
+				compiler_error(20, "Could Not Complete Expression List. Incomplete Program", pS, pC, pT);
+			}
+		} else {
 			parse_expression();
+		}
+	}
 }

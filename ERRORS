@@ -74,7 +74,7 @@ The errors are listed in order. Each error entry contains a detailed explanation
 
 19: Improperly Terminated Variable Declaration.
 
-20: Could Not Complete Let Statement Incomplete Program.
+20: Could Not Complete Let Statement. Incomplete Program.
 	Foun beginning of let statement without, but could not find identifier or action.
 
 21: Identifier Required at this Location.
@@ -82,4 +82,16 @@ The errors are listed in order. Each error entry contains a detailed explanation
 
 22: Symbol '=' or '[' Required at this Location.
 
-23: Incorrect Expression. Symbol '(' or '[' Required at this Location
+23: Incorrect Expression. Symbol '(' or '[' Required at this Location.
+
+24: Could Not Complete Expression List. Incomplete Program.
+
+25. Could Not Complete Term. Incomplete Program.
+
+26. Improperly Terminated Array Expression.  Symbol ']' Required at this Location.
+
+27. Improperly Terminated Subtoutine Expression. Symbol ')' Required at this Location.
+	Subroutine called but was not terminated properly. End of subroutine paramater list could not
+	be determined.
+
+28. Improperly Terminated Expression. Subroutine Name Required.
