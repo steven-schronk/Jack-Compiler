@@ -63,23 +63,16 @@ The errors are listed in order. Each error entry contains a detailed explanation
 15: Incorrect Token Type in Parameter List. Looking for Variable Identifier.
 	Proper identifiers must not start with a symbol or a keyword.
 
-16: Incorrect Token Type in Parameter List. Looking for Comma or Parenthesis.
+16: Incorrect Token Type in Parameter List. Looking for ',' or ')'.
 
-18: Incorrect Data Type in Variable Declaration.
+17. Could Not Complete Variable List of Subroutine. Incomplete Program.
+
+18: Improperly Terminated Variable Declaration.
 	Datatype listed in declaration is not valid. Acceptable datatypes are 'int', 'char',
 	'boolean' and 'Array'.
 
-19: Improperly Terminated Variable Declaration.
-
 20: Could Not Complete Let Statement. Incomplete Program.
-	Foun beginning of let statement without, but could not find identifier or action.
-
-21: Identifier Required at this Location.
-	Let statement must be followd by an identifer.
-
-22: Symbol '=' or '[' Required at this Location.
-
-23: Incorrect Expression. Symbol '(' or '[' Required at this Location.
+	Found beginning of let statement without, but could not find identifier or action.
 
 24: Could Not Complete Expression List. Incomplete Program.
 
@@ -93,3 +86,25 @@ The errors are listed in order. Each error entry contains a detailed explanation
 
 28. Improperly Terminated Expression. Subroutine Name Required.
 
+29. Incorrect Token Type.
+
+30. Subroutine Name Must Be Listed Here.
+
+31. Could Not Find Identifier At This Location.
+
+32. Could Not Find '=' Symbol At This Location.
+
+33. Could Not Find ';' Symbol At This Location.
+
+34. Could Not Parse Expression. Incomplete Program.
+
+35. Could Not Find Class Name or Subroutine Name at This Location.
+	Subroutine calls must begin with either a Class name or a Subroutine name.
+
+36. Could Not Complete Subroutine Call. Incomplete Program.
+
+37. Could Not Find Method Name or Subroutine Name at This Location.
+
+38. Could Not Find Symbol ')' At This Location.
+
+39. Could Not Find Symbol '(' At This Location.

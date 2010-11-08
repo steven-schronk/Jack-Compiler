@@ -81,6 +81,16 @@ void parse_expression();
 void parse_term();
 
 /*
+ *	Compiles a call to a defined subroutine.
+ */
+void parse_subroutine_call();
+
+/*
+ * Compiles a list of expressions, comma separated.
+ */
+void parse_expression_list();
+
+/*
 * Compiles a (possibly empty) comma-separated list of expressions.
 */
 void parse_expr_lst();

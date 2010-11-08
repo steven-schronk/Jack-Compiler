@@ -29,7 +29,7 @@ void parse_class()
 				parse_subroutine(pS, pC, pT);
 			}
 		} else {
-			compiler_error(1, "Incorrect Token Type", pS, pC, pT);
+			compiler_error(29, "Incorrect Token Type", pS, pC, pT);
 		}
 	}
 	if(settings.tokens) { printf("</class>\n"); }
@@ -74,7 +74,7 @@ void parse_subroutine()
 			compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
 		}
 	} else {
-		compiler_error(1, "Incorrect Token Type", pS, pC, pT);
+		compiler_error(29, "Incorrect Token Type", pS, pC, pT);
 	}
 
 	/* look for subroutine name */
@@ -130,7 +130,17 @@ void parse_subroutine()
 		compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
 	}
 
-	parse_statements();
+	while(strcmp(pT, "let") == 0 || strcmp(pT, "if") == 0 || strcmp(pT, "while") == 0 || strcmp(pT, "do") == 0 || strcmp(pT, "return") == 0)
+	{
+		parse_statements();
+		if(has_more_tokens(pC) == TRUE)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
+		}
+	}
 
 	if(settings.tokens) { printf("</subroutineDec>\n"); }
 }
@@ -182,7 +192,7 @@ void parse_params()
 			if(settings.tokens) { printf("</parameterList>\n"); }
 			return;
 		} else {
-			compiler_error(16, "Incorrect Token Type in Parameter List. Looking for Comma or Parenthesis.", pS, pC, pT);
+			compiler_error(16, "Incorrect Token Type in Parameter List. Looking for ',' or ')'", pS, pC, pT);
 		}
 	} else {
 		compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
@@ -273,17 +283,23 @@ void parse_var_dec()
 
 void parse_statements()
 {
-	/* TODO: While(let, if, while, do, return) test token and call token's function */
 	if(settings.tokens) { printf("<subroutineBody>\n"); }
 
 	if(strcmp(pT, "let") == 0)
 	{
 		parse_let();
-	}
-
-	if(strcmp(pT, "do") == 0)
+	} else if(strcmp(pT, "if") == 0)
+	{
+		parse_if();
+	} else if(strcmp(pT, "while") == 0)
+	{
+		parse_while();
+	} else if(strcmp(pT, "do") == 0)
 	{
 		parse_do();
+	} else if(strcmp(pT, "return") == 0)
+	{
+		parse_return();
 	}
 
 	if(settings.tokens) { printf("</subroutineBody>\n"); }
@@ -291,13 +307,28 @@ void parse_statements()
 
 void parse_do()
 {
-	exit_error(0, "Parsing Do");
+	if(settings.tokens) { printf("<doStatement>\n\t<keyword>do</keyword>\n"); }
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(20, "Could Not Complete Do Statement. Incomplete Program", pS, pC, pT);
+	}
+
+	/* must be an identifier */
+	if(tk == IDENTIFIER) {
+		parse_subroutine_call();
+	} else {
+		compiler_error(30, "Subroutine Name Must Be Listed Here", pS, pC, pT);
+	}
+
+	if(settings.tokens) { printf("</doStatement>\n"); }
 }
 
 void parse_let()
 {
-	if(settings.tokens) { printf("<letStatement>\n"); }
-	if(settings.tokens) { printf("\t<keyword>let</keyword>\n"); }
+	if(settings.tokens) { printf("<letStatement>\n\t<keyword>let</keyword>\n"); }
 	if(has_more_tokens(pC) == TRUE)
 	{
 		pC = advance(pC, pT);
@@ -311,7 +342,7 @@ void parse_let()
 	{
 		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
 	} else {
-		compiler_error(20, "Could Not Find Identifier At This Location", pS, pC, pT);
+		compiler_error(31, "Could Not Find Identifier At This Location", pS, pC, pT);
 	}
 
 	/* optional '[' for an array offset value */
@@ -339,7 +370,7 @@ void parse_let()
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
 	} else {
-		compiler_error(20, "Could Not Find '=' Symbol At This Location", pS, pC, pT);
+		compiler_error(32, "Could Not Find '=' Symbol At This Location", pS, pC, pT);
 	}
 
 	/* parse_expression(); */
@@ -360,7 +391,6 @@ void parse_let()
 		compiler_error(20, "Could Not Find ';' Symbol At This Location", pS, pC, pT);
 	}
 
-
 	/* look for ';' */
 	if(has_more_tokens(pC) == TRUE)
 	{
@@ -374,7 +404,7 @@ void parse_let()
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
 	} else {
-		compiler_error(20, "Could Not Find ';' Symbol At This Location", pS, pC, pT);
+		compiler_error(33, "Could Not Find ';' Symbol At This Location", pS, pC, pT);
 	}
 
 	if(settings.tokens) { printf("</letStatement>\n"); }
@@ -383,16 +413,18 @@ void parse_let()
 void parse_while()
 {
 
+	exit_error(0, "Parsing While");
 }
 
 void parse_return()
 {
 
+	exit_error(0, "Parsing Return");
 }
 
 void parse_if()
 {
-
+	exit_error(0, "Parsing If");
 }
 
 void parse_expression()
@@ -404,7 +436,7 @@ void parse_expression()
 			pC = advance(pC, pT);
 			tk = token_type(pT);
 		} else {
-			compiler_error(20, "Could Not Parse Expression. Incomplete Program", pS, pC, pT);
+			compiler_error(34, "Could Not Parse Expression. Incomplete Program", pS, pC, pT);
 		}
 	} while (*pT != ']' && *pT != ';');
 }
@@ -441,21 +473,6 @@ void parse_term()
 		case '(':
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
 			parse_expr_lst();
-			/*
-			if(has_more_tokens(pC) == TRUE)
-			{
-				pC = advance(pC, pT);
-				tk = token_type(pT);
-				if(*pT == ')')
-				{
-					if(settings.tokens) { printf("<symbol>%s</symbol>\n", pT); }
-				} else {
-					compiler_error(27, "Improperly Terminated Subroutine Expression. Symbol ')' Required at this Location", pS, pC, pT);
-				}
-			} else {
-				compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
-			}
-			*/
 			break;
 		case '.':
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
@@ -478,6 +495,92 @@ void parse_term()
 	}
 }
 
+void parse_subroutine_call()
+{
+	if(settings.tokens) { printf("<subroutineCall>\n"); }
+	if(tk == IDENTIFIER)
+	{
+		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+	} else {
+		compiler_error(35, "Could Not Find Class Name or Subroutine Name at This Location", pS, pC, pT);
+	}
+
+	if(has_more_tokens(pC) == TRUE)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(36, "Could Not Complete Subroutine Call. Incomplete Program", pS, pC, pT);
+	}
+
+	if (*pT == '.') {
+			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(has_more_tokens(pC) == TRUE)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+			} else {
+				compiler_error(36, "Could Not Complete Subroutine Call. Incomplete Program", pS, pC, pT);
+			}
+			if(tk == IDENTIFIER)
+			{
+				if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+			} else {
+				compiler_error(37, "Could Not Find Method Name or Subroutine Name at This Location", pS, pC, pT);
+			}
+	}
+
+	if(*pT != '(') /* this for calls with no class name at beginning */
+	{
+		if(has_more_tokens(pC) == TRUE)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(36, "Could Not Complete Subroutine Call. Incomplete Program", pS, pC, pT);
+		}
+	}
+
+	if(*pT == '(')
+	{
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(has_more_tokens(pC) == TRUE)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(36, "Could Not Complete Subroutine Call. Incomplete Program", pS, pC, pT);
+		}
+		parse_expression_list();
+
+		if(*pT == ')')
+		{
+			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(has_more_tokens(pC) == TRUE)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+			} else {
+				compiler_error(38, "Could Not Find Symbol ')' At This Location", pS, pC, pT);
+			}
+		}
+	} else {
+		compiler_error(39, "Could Not Find Symbol '(' At This Location", pS, pC, pT);
+	}
+
+	if(*pT == ';')
+	{
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	}
+
+	if(settings.tokens) { printf("<subroutineCall>\n"); }
+}
+
+void parse_expression_list()
+{
+
+}
+
 void parse_expr_lst()
 {
 	while(*pT != ')')
@@ -490,7 +593,7 @@ void parse_expr_lst()
 					pC = advance(pC, pT);
 					tk = token_type(pT);
 			} else {
-				compiler_error(20, "Could Not Complete Expression List. Incomplete Program", pS, pC, pT);
+				compiler_error(24, "Could Not Complete Expression List. Incomplete Program", pS, pC, pT);
 			}
 		} else {
 			parse_term();
