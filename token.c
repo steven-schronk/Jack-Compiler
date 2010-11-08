@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,9 +17,9 @@ int has_more_tokens(char *pC)
 {
 	if(*(pC+1) == '\0')
 	{
-		return FALSE;
+		return false;
 	} else {
-		return TRUE;
+		return true;
 	}
 }
 

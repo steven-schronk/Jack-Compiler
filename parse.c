@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -12,7 +13,7 @@ void parse_class()
 {
 	if(settings.tokens) { printf("<class>\n"); }
 
-	while(has_more_tokens(pC))
+	while(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -43,7 +44,7 @@ void parse_class_var_dec()
 void parse_subroutine()
 {
 	if(settings.tokens) { printf("<subroutineDec>\n"); }
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -58,7 +59,7 @@ void parse_subroutine()
 	}
 
 	/* look for return type of function */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -78,7 +79,7 @@ void parse_subroutine()
 	}
 
 	/* look for subroutine name */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -93,7 +94,7 @@ void parse_subroutine()
 	}
 
 	/* look for symbol '(' that specifies beginning of parameter list */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -117,7 +118,7 @@ void parse_subroutine()
 	}
 
 	/* look for opening brace for block */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -133,7 +134,7 @@ void parse_subroutine()
 	while(strcmp(pT, "let") == 0 || strcmp(pT, "if") == 0 || strcmp(pT, "while") == 0 || strcmp(pT, "do") == 0 || strcmp(pT, "return") == 0)
 	{
 		parse_statements();
-		if(has_more_tokens(pC) == TRUE)
+		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
 			tk = token_type(pT);
@@ -150,7 +151,7 @@ void parse_params()
 	if(*pT == '(') { if(settings.tokens) { printf("<parameterList>\n"); } }
 
 	/* look for datatype in parameter list */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -167,7 +168,7 @@ void parse_params()
 	}
 
 	/* look for identifier for this parameter */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -182,7 +183,7 @@ void parse_params()
 	}
 
 	/* are there more parameters? */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -203,7 +204,7 @@ void parse_var_dec()
 {
 	int i = 0;
 	/* look for token named 'var' */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -217,7 +218,7 @@ void parse_var_dec()
 	}
 
 	/* look for variable data type */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -227,7 +228,7 @@ void parse_var_dec()
 			/* look for identifier(s) for variable(s) */
 			do {
 				i = 0;
-				if(has_more_tokens(pC) == TRUE)
+				if(has_more_tokens(pC) == true)
 				{
 					pC = advance(pC, pT);
 					tk = token_type(pT);
@@ -247,7 +248,7 @@ void parse_var_dec()
 	if(tk == IDENTIFIER)
 	{
 		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
-		if(has_more_tokens(pC) == TRUE)
+		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
 			tk = token_type(pT);
@@ -260,7 +261,7 @@ void parse_var_dec()
 		}
 	}
 
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -283,8 +284,6 @@ void parse_var_dec()
 
 void parse_statements()
 {
-	if(settings.tokens) { printf("<subroutineBody>\n"); }
-
 	if(strcmp(pT, "let") == 0)
 	{
 		parse_let();
@@ -301,14 +300,12 @@ void parse_statements()
 	{
 		parse_return();
 	}
-
-	if(settings.tokens) { printf("</subroutineBody>\n"); }
 }
 
 void parse_do()
 {
 	if(settings.tokens) { printf("<doStatement>\n\t<keyword>do</keyword>\n"); }
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -329,7 +326,7 @@ void parse_do()
 void parse_let()
 {
 	if(settings.tokens) { printf("<letStatement>\n\t<keyword>let</keyword>\n"); }
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -346,7 +343,7 @@ void parse_let()
 	}
 
 	/* optional '[' for an array offset value */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -376,7 +373,7 @@ void parse_let()
 	/* parse_expression(); */
 
 	/* look for identifier */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -392,7 +389,7 @@ void parse_let()
 	}
 
 	/* look for ';' */
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -418,8 +415,24 @@ void parse_while()
 
 void parse_return()
 {
+	if(settings.tokens) { printf("<returnStatement>\n\t<identifier>%s</identifier>\n", pT); }
 
-	exit_error(0, "Parsing Return");
+	/* look for ';' */
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
+	}
+
+	if(*pT == ';')
+	{
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(33, "Could Not Find ';' Symbol At This Location", pS, pC, pT);
+	}
+	if(settings.tokens) { printf("</returnStatement>\n"); }
 }
 
 void parse_if()
@@ -431,7 +444,7 @@ void parse_expression()
 {
 	do {
 		printf("<expression>%s</expression>\n", pT);
-		if(has_more_tokens(pC) == TRUE)
+		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
 			tk = token_type(pT);
@@ -443,7 +456,7 @@ void parse_expression()
 
 void parse_term()
 {
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -456,7 +469,7 @@ void parse_term()
 		case '[':
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
 			parse_term();
-			if(has_more_tokens(pC) == TRUE)
+			if(has_more_tokens(pC) == true)
 			{
 				pC = advance(pC, pT);
 				tk = token_type(pT);
@@ -484,7 +497,7 @@ void parse_term()
 	if(strchr(UNARY_OP, *pT) != NULL)
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-		if(has_more_tokens(pC) == TRUE)
+		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
 			tk = token_type(pT);
@@ -505,7 +518,7 @@ void parse_subroutine_call()
 		compiler_error(35, "Could Not Find Class Name or Subroutine Name at This Location", pS, pC, pT);
 	}
 
-	if(has_more_tokens(pC) == TRUE)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
@@ -515,7 +528,7 @@ void parse_subroutine_call()
 
 	if (*pT == '.') {
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			if(has_more_tokens(pC) == TRUE)
+			if(has_more_tokens(pC) == true)
 			{
 				pC = advance(pC, pT);
 				tk = token_type(pT);
@@ -532,7 +545,7 @@ void parse_subroutine_call()
 
 	if(*pT != '(') /* this for calls with no class name at beginning */
 	{
-		if(has_more_tokens(pC) == TRUE)
+		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
 			tk = token_type(pT);
@@ -544,19 +557,19 @@ void parse_subroutine_call()
 	if(*pT == '(')
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-		if(has_more_tokens(pC) == TRUE)
+		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
 			tk = token_type(pT);
 		} else {
 			compiler_error(36, "Could Not Complete Subroutine Call. Incomplete Program", pS, pC, pT);
 		}
-		parse_expression_list();
+		parse_expr_lst();
 
 		if(*pT == ')')
 		{
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			if(has_more_tokens(pC) == TRUE)
+			if(has_more_tokens(pC) == true)
 			{
 				pC = advance(pC, pT);
 				tk = token_type(pT);
@@ -576,11 +589,6 @@ void parse_subroutine_call()
 	if(settings.tokens) { printf("<subroutineCall>\n"); }
 }
 
-void parse_expression_list()
-{
-
-}
-
 void parse_expr_lst()
 {
 	while(*pT != ')')
@@ -588,7 +596,7 @@ void parse_expr_lst()
 		if(*pT == ',')
 		{
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			if(has_more_tokens(pC) == TRUE)
+			if(has_more_tokens(pC) == true)
 			{
 					pC = advance(pC, pT);
 					tk = token_type(pT);
