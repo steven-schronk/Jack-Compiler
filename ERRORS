@@ -108,3 +108,15 @@ The errors are listed in order. Each error entry contains a detailed explanation
 38. Could Not Find Symbol ')' At This Location.
 
 39. Could Not Find Symbol '(' At This Location.
+
+40. Incomplete Class Declaration.
+
+41. Token Must be Data Type.
+
+42. Token Must be Variable Name.
+
+43. Incorrect Token Found: Must be 'class'.
+
+44. Could Not Find Class Name or Subroutine Name at This Location.
+
+

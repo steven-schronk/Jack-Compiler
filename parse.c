@@ -13,32 +13,156 @@ void parse_class()
 {
 	if(settings.tokens) { printf("<class>\n"); }
 
-	while(has_more_tokens(pC) == true)
+	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
-
-		if(tk == KEYWORD) {
-			ttyp = keyword(pT);
-			if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
-		} else if (tk == IDENTIFIER){
-			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
-		} else if (tk == SYMBOL){
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			if(pT[0] == '{')
-			{
-				parse_subroutine(pS, pC, pT);
-			}
-		} else {
-			compiler_error(29, "Incorrect Token Type", pS, pC, pT);
-		}
+	} else {
+		compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
 	}
+
+	if(strcmp(pT, "class") == 0 ) {
+	if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+	} else {
+		compiler_error(40, "Incorrect Token Found: Must be 'class'", pS, pC, pT);
+	}
+
+	/* look for class name */
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+			compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+	}
+
+	if (tk == IDENTIFIER){
+		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+	} else {
+		compiler_error(44, "Could Not Find Class Name or Subroutine Name at This Location", pS, pC, pT);
+	}
+
+	/* look for '{' symbol */
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+			compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+	}
+
+	if (tk == SYMBOL){
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(44, "Could Not Find Class Name or Subroutine Name at This Location", pS, pC, pT);
+	}
+
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+	}
+
+	do {
+		parse_class_var_dec();
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+		}
+	} while (strcmp(pT, "static") == 0 || strcmp(pT, "field") == 0);
+
+	parse_subroutine();
+
 	if(settings.tokens) { printf("</class>\n"); }
 }
 
 void parse_class_var_dec()
 {
+	if(settings.tokens) { printf("<classVarDec>\n"); }
 
+	/* look for 'static' or 'field' */
+	if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+	}
+
+	/* look for type */
+	if(tk == IDENTIFIER) {
+		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+	} else if (tk == KEYWORD) {
+		if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0) {
+			if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+		} else {
+			compiler_error(41, "Token Must be Data Type.", pS, pC, pT);
+		}
+	} else {
+		compiler_error(41, "Token Must be Data Type", pS, pC, pT);
+	}
+
+	/* look or variable name */
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+	}
+	if(tk == IDENTIFIER) {
+		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+	} else {
+		compiler_error(42, "Token Must be Variable Name", pS, pC, pT);
+	}
+
+	/* look for ',' */
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+	}
+
+	if(*pT == ',') {
+		do {
+			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(has_more_tokens(pC) == true)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+			} else {
+				compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+			}
+			if(tk == IDENTIFIER) {
+				if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+			} else {
+				compiler_error(42, "Token Must be Variable Name", pS, pC, pT);
+			}
+			if(has_more_tokens(pC) == true)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+			} else {
+				compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+			}
+		} while (*pT == ',');
+	}
+
+	if(*pT == ';') {
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(33, "Could Not Find ';' Symbol At This Location", pS, pC, pT);
+	}
+
+	if(settings.tokens) { printf("</classVarDec>\n"); }
 }
 
 void parse_subroutine()
