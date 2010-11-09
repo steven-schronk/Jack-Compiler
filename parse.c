@@ -65,7 +65,8 @@ void parse_class()
 		compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
 	}
 
-	do {
+	while(strcmp(pT, "static") == 0 || strcmp(pT, "field") == 0)
+	{
 		parse_class_var_dec();
 		if(has_more_tokens(pC) == true)
 		{
@@ -74,7 +75,7 @@ void parse_class()
 		} else {
 			compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
 		}
-	} while (strcmp(pT, "static") == 0 || strcmp(pT, "field") == 0);
+	}
 
 	parse_subroutine();
 
