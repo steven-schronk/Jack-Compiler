@@ -168,17 +168,13 @@ void parse_class_var_dec()
 void parse_subroutine()
 {
 	if(settings.tokens) { printf("<subroutineDec>\n"); }
-	if(has_more_tokens(pC) == true)
-	{
-		pC = advance(pC, pT);
-		tk = token_type(pT);
-		if(tk == KEYWORD) {
-			if(strcmp(pT, "constructor") == 0 || strcmp(pT, "function") == 0 || strcmp(pT, "method") == 0)
-			{
-				if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
-			} else {
-				compiler_error(8, "Incorrect Token Found: Must be 'constructor', 'function', or 'method'", pS, pC, pT);
-			}
+
+	if(tk == KEYWORD) {
+		if(strcmp(pT, "constructor") == 0 || strcmp(pT, "function") == 0 || strcmp(pT, "method") == 0)
+		{
+			if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+		} else {
+			compiler_error(8, "Incorrect Token Found: Must be 'constructor', 'function', or 'method'", pS, pC, pT);
 		}
 	}
 
@@ -550,6 +546,8 @@ void parse_return()
 		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
 	}
 
+	if (*pT != ';') { parse_expression(); }
+
 	if(*pT == ';')
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
@@ -567,7 +565,7 @@ void parse_if()
 void parse_expression()
 {
 	do {
-		printf("<expression>%s</expression>\n", pT);
+		if(settings.tokens) { printf("<expression>%s</expression>\n", pT); }
 		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
