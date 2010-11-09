@@ -246,6 +246,13 @@ void parse_subroutine()
 		if(*pT == '{')
 		{
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(has_more_tokens(pC) == true)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+			} else {
+				compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
+			}
 			parse_var_dec();
 		}
 	} else {
@@ -323,20 +330,11 @@ void parse_params()
 
 void parse_var_dec()
 {
-	int i = 0;
 	/* look for token named 'var' */
-	if(has_more_tokens(pC) == true)
+	if(strcmp(pT, "var") == 0)
 	{
-		pC = advance(pC, pT);
-		tk = token_type(pT);
-		if(strcmp(pT, "var") == 0)
-		{
-			if(settings.tokens) { printf("<varDec>\n"); }
-
-		} else { return; }
-	} else {
-		compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
-	}
+		if(settings.tokens) { printf("<varDec>\n\t<symbol>%s</symbol>\n", pT); }
+	} else { return; }
 
 	/* look for variable data type */
 	if(has_more_tokens(pC) == true)
@@ -346,61 +344,49 @@ void parse_var_dec()
 		if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0 || strcmp(pT, "Array") == 0)
 		{
 			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
-			/* look for identifier(s) for variable(s) */
-			do {
-				i = 0;
-				if(has_more_tokens(pC) == true)
-				{
-					pC = advance(pC, pT);
-					tk = token_type(pT);
-					if(tk == IDENTIFIER)
-					{
-						if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
 
-					}
-				} else {
-					compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
-				}
-			} while (i > 0);
+		} else if (tk == IDENTIFIER) { /* could also be a custom class name */
+			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+		} else {
+			compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
 		}
 	}
 
-	/* could also be a custom class name */
-	if(tk == IDENTIFIER)
-	{
-		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+	/* look for identifier(s) for variable(s) */
+	do {
 		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
 			tk = token_type(pT);
 		} else {
-			compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
+			compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
 		}
 		if(tk == IDENTIFIER)
 		{
 			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
 		}
-	}
+
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
+		}
+		if(tk == SYMBOL)
+		{
+			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		}
+	} while (*pT == ',');
 
 	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
-		if((tk == SYMBOL) && (*pT == ';' || *pT == ',')) {
-			if(*pT == ',') { i++; }
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			if(i == 0)
-			{
-				parse_var_dec();
-			}
-		} else {
-			compiler_error(18, "Improperly Terminated Variable Declaration", pS, pC, pT);
-		}
 	} else {
 		compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
 	}
-
-	if(settings.tokens) { printf("<varDec>\n"); }
+	parse_var_dec();
 }
 
 void parse_statements()
