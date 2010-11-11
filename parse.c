@@ -9,6 +9,9 @@
 #include "parse.h"
 #include "token.h"
 
+#define OP "+-*//&|<>="
+#define UNARY_OP "-~"
+
 void parse_class()
 {
 	if(settings.tokens) { printf("<class>\n"); }
@@ -551,26 +554,49 @@ void parse_if()
 
 void parse_expression()
 {
-	do {
-		if(settings.tokens) { printf("<expression>%s</expression>\n", pT); }
-		if(has_more_tokens(pC) == true)
-		{
-			pC = advance(pC, pT);
-			tk = token_type(pT);
-		} else {
-			compiler_error(34, "Could Not Parse Expression. Incomplete Program", pS, pC, pT);
-		}
-	} while (*pT != ']' && *pT != ';');
-}
+	parse_term();
 
-void parse_term()
-{
 	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
 	} else {
-		compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+		compiler_error(34, "Could Not Parse Expression. Incomplete Program", pS, pC, pT);
+	}
+
+	if(strchr(OP, *pT) != NULL)
+	{
+		if(settings.tokens) { printf("<operator>%s</operator>\n", pT); }
+			if(has_more_tokens(pC) == true)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+			} else {
+				compiler_error(34, "Could Not Parse Expression. Incomplete Program", pS, pC, pT);
+			}
+			parse_expression();
+	}
+}
+
+void parse_term()
+{
+	if(tk == INT_CONST)
+	{
+		if(settings.tokens) { printf("<integerConst>%s</intConst>\n", pT); }
+		return;
+	}
+
+	if(strchr(UNARY_OP, *pT) != NULL)
+	{
+		if(settings.tokens) { printf("<unaryOperator>%s</unaryOperator>\n", pT); }
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+			parse_term();
+		} else {
+			compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+		}
 	}
 
 	switch(*pT)
@@ -594,26 +620,26 @@ void parse_term()
 			break;
 		case '(':
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			parse_expr_lst();
+			if(has_more_tokens(pC) == true)
+			{
+				pC = advance(pC, pT);
+				tk = token_type(pT);
+			} else {
+				compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+			}
+			parse_expression();
+
+			if (*pT == ')') {
+				if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			} else {
+				compiler_error(38, "Could Not Find Symbol ')' At This Location", pS, pC, pT);
+			}
 			break;
 		case '.':
 			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
 			break;
 		default:
 			return;
-	}
-
-	if(strchr(UNARY_OP, *pT) != NULL)
-	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-		if(has_more_tokens(pC) == true)
-		{
-			pC = advance(pC, pT);
-			tk = token_type(pT);
-			parse_term();
-		} else {
-			compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
-		}
 	}
 }
 
