@@ -259,17 +259,7 @@ void parse_subroutine()
 		compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
 	}
 
-	while(strcmp(pT, "let") == 0 || strcmp(pT, "if") == 0 || strcmp(pT, "while") == 0 || strcmp(pT, "do") == 0 || strcmp(pT, "return") == 0)
-	{
-		parse_statements();
-		if(has_more_tokens(pC) == true)
-		{
-			pC = advance(pC, pT);
-			tk = token_type(pT);
-		} else {
-			compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
-		}
-	}
+	parse_statements();
 
 	if(settings.tokens) { printf("</subroutineDec>\n"); }
 }
@@ -391,27 +381,38 @@ void parse_var_dec()
 
 void parse_statements()
 {
-	if(strcmp(pT, "let") == 0)
-	{
-		parse_let();
-	} else if(strcmp(pT, "if") == 0)
-	{
-		parse_if();
-	} else if(strcmp(pT, "while") == 0)
-	{
-		parse_while();
-	} else if(strcmp(pT, "do") == 0)
-	{
-		parse_do();
-	} else if(strcmp(pT, "return") == 0)
-	{
-		parse_return();
-	}
+	do {
+		if(strcmp(pT, "let") == 0)
+		{
+			parse_let();
+		} else if(strcmp(pT, "if") == 0)
+		{
+			parse_if();
+		} else if(strcmp(pT, "while") == 0)
+		{
+			parse_while();
+		} else if(strcmp(pT, "do") == 0)
+		{
+			parse_do();
+		} else if(strcmp(pT, "return") == 0)
+		{
+			parse_return();
+		}
+
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		}
+
+	} while (strcmp(pT, "let") == 0 || strcmp(pT, "if") == 0 || strcmp(pT, "while") == 0 || \
+			 strcmp(pT, "do") == 0  || strcmp(pT, "return") == 0 );
 }
 
 void parse_do()
 {
 	if(settings.tokens) { printf("<doStatement>\n\t<keyword>do</keyword>\n"); }
+
 	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
@@ -425,6 +426,21 @@ void parse_do()
 		parse_subroutine_call();
 	} else {
 		compiler_error(30, "Subroutine Name Must Be Listed Here", pS, pC, pT);
+	}
+
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(20, "Could Not Complete Do Statement. Incomplete Program", pS, pC, pT);
+	}
+
+	if(*pT == ';')
+	{
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(33, "Could Not Find ';' Symbol At This Location.", pS, pC, pT);
 	}
 
 	if(settings.tokens) { printf("</doStatement>\n"); }
@@ -461,15 +477,29 @@ void parse_let()
 	if(*pT == '[')
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
+		}
 		parse_expression();
 	}
 
 	if(*pT == ']')
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
+		}
 	}
 
-	/* look for '=' */
 	if(*pT == '=')
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
@@ -487,6 +517,14 @@ void parse_let()
 
 	parse_expression();
 
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
+	}
+
 	if(*pT == ';')
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
@@ -499,8 +537,73 @@ void parse_let()
 
 void parse_while()
 {
+	if(settings.tokens) { printf("<whileStatement>\n\t<identifier>%s</identifier>\n", pT); }
 
-	exit_error(0, "Parsing While");
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(47, "Could Not Complete While Statement. Incomplete Program", pS, pC, pT);
+	}
+
+	if(*pT == '(')
+	{
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(39, "Could Not Find '(' Symbol At This Location", pS, pC, pT);
+	}
+
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(47, "Could Not Complete While Statement. Incomplete Program", pS, pC, pT);
+	}
+
+	parse_expression();
+
+	if(*pT == ')')
+	{
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(38, "Could Not Find ')' Symbol At This Location", pS, pC, pT);
+	}
+
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(47, "Could Not Complete While Statement. Incomplete Program", pS, pC, pT);
+	}
+
+	if(*pT == '{')
+	{
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(45, "Could Not Find '{' Symbol At This Location", pS, pC, pT);
+	}
+
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(47, "Could Not Complete While Statement. Incomplete Program", pS, pC, pT);
+	}
+
+	parse_statements();
+
+	if(*pT == '}')
+	{
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(46, "Could Not Find '}' Symbol At This Location", pS, pC, pT);
+	}
+
+	if(settings.tokens) { printf("</whileStatement>\n"); }
 }
 
 void parse_return()
@@ -536,17 +639,9 @@ void parse_expression()
 {
 	parse_term();
 
-	if(has_more_tokens(pC) == true)
-	{
-		pC = advance(pC, pT);
-		tk = token_type(pT);
-	} else {
-		compiler_error(34, "Could Not Parse Expression. Incomplete Program", pS, pC, pT);
-	}
-
 	if(strchr(BINARY_OP, *pT) != NULL)
 	{
-		if(settings.tokens) { printf("<operator>%s</operator>\n", pT); }
+		if(settings.tokens) { printf("\t<operator>%s</operator>\n", pT); }
 			if(has_more_tokens(pC) == true)
 			{
 				pC = advance(pC, pT);
@@ -556,13 +651,14 @@ void parse_expression()
 			}
 			parse_expression();
 	}
+
 }
 
 void parse_term()
 {
 	if(tk == INT_CONST)
 	{
-		if(settings.tokens) { printf("<integerConst>%s</intConst>\n", pT); }
+		if(settings.tokens) { printf("\t<intConst>%s</intConst>\n", pT); }
 		return;
 	}
 
@@ -649,12 +745,11 @@ void parse_term()
 			default:
 				return;
 		}
-
 }
 
 void parse_subroutine_call()
 {
-	if(settings.tokens) { printf("<subroutineCall>\n"); }
+	if(settings.tokens) { printf("\t<subroutineCall>\n"); }
 	if(tk == IDENTIFIER)
 	{
 		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
@@ -722,7 +817,7 @@ void parse_subroutine_call()
 		compiler_error(38, "Could Not Find Symbol ')' At This Location", pS, pC, pT);
 	}
 
-	if(settings.tokens) { printf("<subroutineCall>\n"); }
+	if(settings.tokens) { printf("\t<subroutineCall>\n"); }
 }
 
 void parse_expr_lst()
@@ -740,7 +835,7 @@ void parse_expr_lst()
 				compiler_error(24, "Could Not Complete Expression List. Incomplete Program", pS, pC, pT);
 			}
 		} else {
-			parse_term();
+			parse_expression();
 		}
 	}
 }

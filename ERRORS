@@ -119,4 +119,8 @@ The errors are listed in order. Each error entry contains a detailed explanation
 
 44. Could Not Find Class Name or Subroutine Name at This Location.
 
+45. Could Not Find '{' Symbol At This Location.
 
+46. Could Not Find '}' Symbol At This Location.
+
+47 Could Not Complete While Statement. Incomplete Program.
