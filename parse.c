@@ -9,9 +9,6 @@
 #include "parse.h"
 #include "token.h"
 
-#define OP "+-*//&|<>="
-#define UNARY_OP "-~"
-
 void parse_class()
 {
 	if(settings.tokens) { printf("<class>\n"); }
@@ -480,9 +477,6 @@ void parse_let()
 		compiler_error(32, "Could Not Find '=' Symbol At This Location", pS, pC, pT);
 	}
 
-	/* parse_expression(); */
-
-	/* look for identifier */
 	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
@@ -491,21 +485,7 @@ void parse_let()
 		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
 	}
 
-	if(tk == IDENTIFIER)
-	{
-		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
-	} else {
-		compiler_error(20, "Could Not Find ';' Symbol At This Location", pS, pC, pT);
-	}
-
-	/* look for ';' */
-	if(has_more_tokens(pC) == true)
-	{
-		pC = advance(pC, pT);
-		tk = token_type(pT);
-	} else {
-		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
-	}
+	parse_expression();
 
 	if(*pT == ';')
 	{
@@ -564,7 +544,7 @@ void parse_expression()
 		compiler_error(34, "Could Not Parse Expression. Incomplete Program", pS, pC, pT);
 	}
 
-	if(strchr(OP, *pT) != NULL)
+	if(strchr(BINARY_OP, *pT) != NULL)
 	{
 		if(settings.tokens) { printf("<operator>%s</operator>\n", pT); }
 			if(has_more_tokens(pC) == true)
@@ -599,48 +579,77 @@ void parse_term()
 		}
 	}
 
-	switch(*pT)
+	if(tk == IDENTIFIER)
 	{
-		case '[':
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			parse_term();
-			if(has_more_tokens(pC) == true)
-			{
-				pC = advance(pC, pT);
-				tk = token_type(pT);
+		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+		}
+	}
+
+		switch(*pT)
+		{
+			case '[':
+				if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+
+				if(has_more_tokens(pC) == true)
+				{
+					pC = advance(pC, pT);
+					tk = token_type(pT);
+				} else {
+					compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+				}
+
+				parse_expression();
 				if(*pT == ']')
 				{
 					if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-				} else {
-					compiler_error(26, "Improperly Terminated Array Expression. Symbol ']' Required at this Location.", pS, pC, pT);
+					} else {
+						compiler_error(26, "Improperly Terminated Array Expression. Symbol ']' Required at this Location.", pS, pC, pT);
 				}
-			} else {
-				compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
-			}
-			break;
-		case '(':
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			if(has_more_tokens(pC) == true)
-			{
-				pC = advance(pC, pT);
-				tk = token_type(pT);
-			} else {
-				compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
-			}
-			parse_expression();
 
-			if (*pT == ')') {
+				break;
+			case '(':
 				if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			} else {
-				compiler_error(38, "Could Not Find Symbol ')' At This Location", pS, pC, pT);
-			}
-			break;
-		case '.':
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			break;
-		default:
-			return;
-	}
+
+				if(has_more_tokens(pC) == true)
+				{
+					pC = advance(pC, pT);
+					tk = token_type(pT);
+				} else {
+					compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+				}
+
+				parse_expression();
+
+				if (*pT == ')') {
+					if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+				} else {
+					compiler_error(38, "Could Not Find Symbol ')' At This Location", pS, pC, pT);
+				}
+				break;
+			case '.':
+				if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+
+				if(has_more_tokens(pC) == true)
+				{
+					pC = advance(pC, pT);
+					tk = token_type(pT);
+				} else {
+					compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+				}
+
+				parse_subroutine_call();
+				break;
+			default:
+				return;
+		}
+
 }
 
 void parse_subroutine_call()
@@ -692,33 +701,25 @@ void parse_subroutine_call()
 	if(*pT == '(')
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-		if(has_more_tokens(pC) == true)
-		{
-			pC = advance(pC, pT);
-			tk = token_type(pT);
-		} else {
-			compiler_error(36, "Could Not Complete Subroutine Call. Incomplete Program", pS, pC, pT);
-		}
-		parse_expr_lst();
-
-		if(*pT == ')')
-		{
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
-			if(has_more_tokens(pC) == true)
-			{
-				pC = advance(pC, pT);
-				tk = token_type(pT);
-			} else {
-				compiler_error(38, "Could Not Find Symbol ')' At This Location", pS, pC, pT);
-			}
-		}
 	} else {
 		compiler_error(39, "Could Not Find Symbol '(' At This Location", pS, pC, pT);
 	}
 
-	if(*pT == ';')
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(36, "Could Not Complete Subroutine Call. Incomplete Program", pS, pC, pT);
+	}
+
+	parse_expr_lst();
+
+	if(*pT == ')')
 	{
 		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+	} else {
+		compiler_error(38, "Could Not Find Symbol ')' At This Location", pS, pC, pT);
 	}
 
 	if(settings.tokens) { printf("<subroutineCall>\n"); }
