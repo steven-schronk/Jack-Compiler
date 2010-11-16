@@ -5,6 +5,7 @@ struct settings
 {
 	int verbose;
 	int tokens;
+	int test;
 };
 
 extern struct settings settings;
