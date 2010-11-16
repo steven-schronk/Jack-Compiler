@@ -79,7 +79,7 @@ void compiler_error(const int comp_num, const char *err_msg, char *pS, char *pC,
 		pCount++;
 	}
 
-	fprintf(stderr, "ERROR %d: %s On Line %d\n\n", comp_num, err_msg, line_num);
+	fprintf(stderr, "ERROR %d: %s On Line %d.\n\n", comp_num, err_msg, line_num);
 	exit(EXIT_SUCCESS);
 }
 

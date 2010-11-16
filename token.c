@@ -39,8 +39,10 @@ char *advance(char *pC, char pT[])
 		/* skip past C style comments */
 		if(*pC == '/' && *(pC+1) == '*')
 		{
-			pC++;
-			pC = strchr(pC, '/');
+			pC += 2;
+			do {
+				pC++;
+			} while((*pC != '/') || (*(pC-1) != '*'));
 			pC++;
 		}
 

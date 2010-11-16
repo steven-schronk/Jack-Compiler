@@ -4,6 +4,9 @@ It should provide assistance to the user in the correct and efficient use of the
 
 The errors are listed in order. Each error entry contains a detailed explanation of the error as well as optional tips for reducing or eliminating its occurrence.
 
+0: Unit Testing Failed.
+	All unit test must pass for compiler software to be considered valid.
+
 1: No Input Files.
 	Compiler does not have a file to compile.
 	Retry command with a filename as an argument.

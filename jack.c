@@ -6,6 +6,7 @@
 #include "error.h"
 #include "jack.h"
 #include "parse.h"
+#include "test.h"
 #include "token.h"
 
 char *pC = NULL; /* pointer to code */
@@ -32,6 +33,13 @@ int main(int argc, char *argv[])
 	char FilenameBuff[80];
 
 	FILE *fpSource, *fpDest;
+
+	if(test_all() == 0)
+	{
+		printf("\nUNIT TESTING OK.\n\n");
+	} else {
+		exit_error(0, "Unit Testing Failed");
+	}
 
 	if(argc < 2) { exit_error(1, "No Input Files."); usage(); }
 	/* TODO: future versions will accept more than one file */
