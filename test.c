@@ -140,6 +140,128 @@ int test_nested_cpp_comments()
 	return result;
 }
 
+int test_literal_strings()
+{
+	int result = 0;
+	char *pStart = NULL;
+	char source[] = "\"S\" \0";
+
+	test_msg_start("Testing String Literals");
+	pC = pStart = source;
+	pC = advance(pC, pT);
+
+	/* token should be correct */
+	if(strcmp(pT, "S") != 0) { result++; }
+
+	/* pointer to code should be in correct position */
+	if(pC - pStart != 3) { result++; }
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
+int test_symbol_recog()
+{
+	int result = 0;
+	char *pStart = NULL;
+	char source[] = "(){\0";
+
+	test_msg_start("Testing Symbol Recognition");
+	pC = pStart = source;
+	pC = advance(pC, pT);
+
+	/* token should be correct */
+	if(strcmp(pT, "(") != 0) { result++; }
+
+	/* pointer to code should be in correct position */
+	if(pC - pStart != 1) { result++; }
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
+int test_keyword_recog()
+{
+	int result = 0;
+	return result;
+}
+
+int test_token_type()
+{
+	int result = 0;
+	int i = 0;
+
+	test_msg_start("Testing Token Type Recognition");
+
+	while(keywords[i] != NULL)
+	{
+		strcpy(pT, keywords[i]);
+		tk = -1; /* be certain this value is changed */
+		tk = token_type(pT);
+		if(tk != KEYWORD) { result++; }
+		i++;
+	}
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
+int test_end_of_code()
+{
+	int result = 0;
+	char source[] = "\n\0";
+
+	test_msg_start("Testing For EOF Source");
+
+	pC = source;
+	result = has_more_tokens(pC);
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
+int test_no_code()
+{
+	int result = 0;
+	test_msg_start("Testing For NULL Source");
+
+	pC = NULL;
+	result = has_more_tokens(pC);
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
 int test_all()
 {
 	int result = 0;
@@ -148,6 +270,12 @@ int test_all()
 	result += test_nested_c_comments();
 	result += test_cpp_comments();
 	result += test_nested_cpp_comments();
+	result += test_literal_strings();
+	result += test_symbol_recog();
+	result += test_keyword_recog();
+	result += test_token_type();
+	result += test_end_of_code();
+	result += test_no_code();
 
 	return result;
 }

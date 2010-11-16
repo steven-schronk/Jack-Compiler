@@ -15,6 +15,8 @@ char *keywords[] =
 
 int has_more_tokens(char *pC)
 {
+	if(pC == NULL) { return false; }
+
 	if(*(pC+1) == '\0')
 	{
 		return false;
