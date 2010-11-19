@@ -65,8 +65,11 @@ void compiler_error(const int comp_num, const char *err_msg, char *pS, char *pC,
 	sp_count--; /* off by one because of arrow printed at end of line*/
 
 	/* print arrow pointing to token compiler cannot comprehend */
-	while(sp_count >= 0) {
-		if(sp_count == 0) { fprintf(stderr, "^\n");
+	while(sp_count >= 0)
+	{
+		if(sp_count == 0)
+		{
+			fprintf(stderr, "^\n");
 		} else {
 			if(*pCount == '\t')
 			{
@@ -80,7 +83,8 @@ void compiler_error(const int comp_num, const char *err_msg, char *pS, char *pC,
 	}
 
 	fprintf(stderr, "ERROR %d: %s On Line %d.\n\n", comp_num, err_msg, line_num);
-	exit(EXIT_SUCCESS);
+
+	exit(EXIT_FAILURE);
 }
 
 void line_notification(const int line_num)

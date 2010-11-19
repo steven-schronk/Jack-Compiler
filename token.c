@@ -81,7 +81,8 @@ char *advance(char *pC, char pT[])
 	}
 	while(TRUE)
 	{
-		if(in_quote){
+		if(in_quote)
+		{
 			if(*pC == '"') {  pC++; break; } /* found corresponding quote, stop */
 		} else {
 			if(((strchr(SPACES, ch)) != NULL) || ((strchr(SYMBOLS, ch)) != NULL))
@@ -97,7 +98,6 @@ char *advance(char *pC, char pT[])
 	pT[cont] = '\0';
 	return pC;
 }
-
 
 token token_type(char pT[])
 {
@@ -130,8 +130,7 @@ token token_type(char pT[])
 	return t;
 }
 
-
- ttype keyword(char pT[])
+ttype keyword(char pT[])
 {
 	 int i = 0;
 	 do {
@@ -140,12 +139,10 @@ token token_type(char pT[])
 	return i;
 }
 
-
 char symbol()
 {
 	return 'z';
 }
-
 
 char *identifier(char *str)
 {
@@ -153,12 +150,10 @@ char *identifier(char *str)
 	return NULL;
 }
 
-
 int int_val(char pT[])
 {
 	return atoi(pT);
 }
-
 
 char *string_val()
 {
