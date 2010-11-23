@@ -233,7 +233,7 @@ void parse_subroutine()
 	/* look for end of parameter list */
 	if(*pT == ')')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n<subroutineBody>\n", pT); }
 	} else {
 		compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
 	}
@@ -261,7 +261,7 @@ void parse_subroutine()
 
 	parse_statements();
 
-	if(settings.tokens) { printf("</subroutineDec>\n"); }
+	if(settings.tokens) { printf("</subroutineBody>\n</subroutineDec>\n"); }
 }
 
 void parse_params()
@@ -292,7 +292,6 @@ void parse_params()
 		tk = token_type(pT);
 		if(tk == IDENTIFIER) {
 			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
-
 		} else {
 			compiler_error(15, "Incorrect Token Type in Parameter List. Looking for Variable Identifier.", pS, pC, pT);
 		}
@@ -306,6 +305,7 @@ void parse_params()
 		pC = advance(pC, pT);
 		tk = token_type(pT);
 		if(*pT == ',') {
+			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
 			parse_params();
 		} else if (*pT == ')') { /* exit parse_params */
 			if(settings.tokens) { printf("</parameterList>\n"); }
@@ -381,6 +381,7 @@ void parse_var_dec()
 
 void parse_statements()
 {
+	if(settings.tokens) { printf("<statements>\n"); }
 	do {
 		if(strcmp(pT, "let") == 0)
 		{
@@ -407,6 +408,7 @@ void parse_statements()
 
 	} while (strcmp(pT, "let") == 0 || strcmp(pT, "if") == 0 || strcmp(pT, "while") == 0 || \
 			 strcmp(pT, "do") == 0  || strcmp(pT, "return") == 0 );
+	if(settings.tokens) { printf("</statements>\n"); }
 }
 
 void parse_do()
@@ -689,6 +691,7 @@ void parse_if()
 
 void parse_expression()
 {
+	if(settings.tokens) { printf("\t<expression>\n"); }
 	parse_term();
 
 	if(strchr(BINARY_OP, *pT) != NULL)
@@ -703,10 +706,12 @@ void parse_expression()
 			}
 			parse_expression();
 	}
+	if(settings.tokens) { printf("\t</expression>\n"); }
 }
 
 void parse_term()
 {
+	if(settings.tokens) { printf("<term>\n"); }
 	if(tk == INT_CONST)
 	{
 		if(settings.tokens) { printf("\t<intConst>%s</intConst>\n", pT); }
@@ -832,6 +837,7 @@ void parse_term()
 		default:
 			return;
 	}
+	if(settings.tokens) { printf("</term>\n"); }
 }
 
 void parse_subroutine_call()
@@ -917,6 +923,7 @@ void parse_subroutine_call()
 
 void parse_expr_lst()
 {
+	if(settings.tokens) { printf("\t<expressionList>\n"); }
 	while(*pT != ')')
 	{
 		if(*pT == ',')
@@ -933,4 +940,5 @@ void parse_expr_lst()
 			parse_expression();
 		}
 	}
+	if(settings.tokens) { printf("\t</expressionList>\n"); }
 }
