@@ -31,6 +31,8 @@ int test_end_of_code();
 
 int test_no_code();
 
+int test_parse_expression();
+
 int test_all();
 
 #endif
