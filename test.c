@@ -265,9 +265,9 @@ int test_no_code()
 int test_parse_expression()
 {
 	int result = 0;
-	char source[] = "-(-(2 + (-12 / 12)*83));\n while";
+	char source[] = "-(-(2 + (-12 / 12)*83));\n";
 
-	test_msg_start("Testing Expression Parsing");
+	test_msg_start("Testing Expression Parsing - Numerical");
 
 	pC = source;
 	pC = advance(pC, pT);
@@ -277,6 +277,166 @@ int test_parse_expression()
 
 	/* pointer to code should be in correct position */
 	if(pC - source != 24) { result++; }
+
+	/* token should be correct */
+	if(strcmp(pT, ";") != 0) { result++; }
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
+int test_parse_expression_keyword()
+{
+	int result = 0, i = 0;
+	char *source[] =
+		{
+				"true;\n",
+				"null;\n",
+				"this;\n",
+				"false;\n"
+		};
+
+	test_msg_start("Testing Expression Parsing - Keywords");
+
+	while(i <= 3)
+	{
+		pC = source[i];
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+
+		parse_expression();
+
+		/* pointer to code should be in correct position */
+		if(i <= 2)
+		{
+			if(pC - source[i] != 5) { result++; }
+		} else {
+			if(pC - source[i] != 6) { result++; }
+		}
+
+		/* token should be correct */
+		if(strcmp(pT, ";") != 0) { result++; }
+		i++;
+	}
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
+int test_parse_expression_nested_array()
+{
+	int result = 0;
+	char source[] = "data1[data2[12]];\n";
+
+	test_msg_start("Testing Expression Parsing - Nested Arrays");
+
+	pC = source;
+	pC = advance(pC, pT);
+	tk = token_type(pT);
+
+	parse_expression();
+
+	/* pointer to code should be in correct position */
+	if(pC - source != 17) { result++; }
+
+	/* token should be correct */
+	if(strcmp(pT, ";") != 0) { result++; }
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
+int test_parse_expression_nested_sub()
+{
+	int result = 0;
+	char source[] = "data1(data2(12));\n";
+
+	test_msg_start("Testing Expression Parsing - Nested Subroutine");
+
+	pC = source;
+	pC = advance(pC, pT);
+	tk = token_type(pT);
+
+	parse_expression();
+
+	/* pointer to code should be in correct position */
+	if(pC - source != 17) { result++; }
+
+	/* token should be correct */
+	if(strcmp(pT, ";") != 0) { result++; }
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
+int test_parse_expression_class_sub()
+{
+	int result = 0;
+	char source[] = "class_name.sub_name();\n";
+
+	test_msg_start("Testing Expression Parsing - Class Subroutine");
+
+	pC = source;
+	pC = advance(pC, pT);
+	tk = token_type(pT);
+
+	parse_expression();
+
+	/* pointer to code should be in correct position */
+	if(pC - source != 22) { result++; }
+
+	/* token should be correct */
+	if(strcmp(pT, ";") != 0) { result++; }
+
+	if(result == PASSED)
+	{
+		test_msg_end(PASSED);
+	} else {
+		test_msg_end(FAILED);
+	}
+
+	return result;
+}
+
+int test_parse_expression_list()
+{
+	int result = 0;
+	char source[] = "class_name.sub_name(87, var_name);\n";
+
+	test_msg_start("Testing Expression Parsing - Expression List");
+
+	pC = source;
+	pC = advance(pC, pT);
+	tk = token_type(pT);
+
+	parse_expression();
+
+	/* pointer to code should be in correct position */
+	if(pC - source != 34) { result++; }
 
 	/* token should be correct */
 	if(strcmp(pT, ";") != 0) { result++; }
@@ -309,6 +469,11 @@ int test_all()
 	result += test_end_of_code();
 	result += test_no_code();
 	result += test_parse_expression();
+	result += test_parse_expression_keyword();
+	result += test_parse_expression_nested_array();
+	result += test_parse_expression_nested_sub();
+	result += test_parse_expression_class_sub();
+	result += test_parse_expression_list();
 
 	return result;
 }
