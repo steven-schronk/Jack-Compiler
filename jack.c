@@ -14,6 +14,7 @@ char pT[1000];  /* pointer to token */
 char *pS = NULL;
 token tk;
 ttype ttyp;
+int space_count = 0; /* number of spaces before printing token */
 
 void usage(void)
 {

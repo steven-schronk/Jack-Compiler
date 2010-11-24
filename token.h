@@ -7,6 +7,9 @@
 #define BINARY_OP "*+-&/|<>="
 #define UNARY_OP "-~"
 
+extern int space_count;
+extern char pT[];
+
 typedef enum {
 	BOOLEAN, CHAR, CLASS, CONSTRUCTOR, DO, ELSE,
 	FALSE, FIELD, FUNCTION, IF, INT, LET, METHOD,
@@ -14,6 +17,8 @@ typedef enum {
 } ttype;
 
 typedef enum { KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST } token;
+
+typedef enum { OPEN, CLOSE, BOTH } ptoken;
 
 /*
 * Look at source stream and determine if more tokens are available.
@@ -63,6 +68,12 @@ int int_val(char pT[]);
  * Called only when token_type is STRING_CONST.
  */
 char *string_val();
+
+/*
+ * Prints opening token to stdout.
+ * Adds number of spaces stored in space_count to beginning of token.
+ */
+void token_print(char *s, ptoken print_spec);
 
 #endif
 

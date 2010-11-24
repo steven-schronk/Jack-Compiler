@@ -8,6 +8,7 @@ extern char *pC;
 extern char pT[];
 extern token  tk;
 extern ttype ttyp;
+extern int space_count;
 
 /*
 * Compiles a complete class.

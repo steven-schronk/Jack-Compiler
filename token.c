@@ -159,3 +159,28 @@ char *string_val()
 {
 	return NULL;
 }
+
+void token_print(char *s, ptoken print_spec)
+{
+	int i = 0;
+
+	while(i < space_count)
+	{
+		printf("  ");
+		i++;
+	}
+
+	switch(print_spec)
+	{
+		case OPEN:
+			printf("<%s>\n", s);
+			break;
+		case CLOSE:
+			printf("</%s>\n", s);
+			break;
+		case BOTH:
+			printf("<%s> %s </%s>\n", s, pT, s);
+			break;
+	}
+}
+

@@ -11,7 +11,11 @@
 
 void parse_class()
 {
-	if(settings.tokens) { printf("<class>\n"); }
+	if(settings.tokens)
+	{
+		token_print("class", OPEN);
+		space_count++;
+	}
 
 	if(has_more_tokens(pC) == true)
 	{
@@ -22,7 +26,7 @@ void parse_class()
 	}
 
 	if(strcmp(pT, "class") == 0 ) {
-	if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+	if(settings.tokens) { token_print("keyword", BOTH); }
 	} else {
 		compiler_error(43, "Incorrect Token Found: Must be 'class'", pS, pC, pT);
 	}
@@ -37,7 +41,7 @@ void parse_class()
 	}
 
 	if (tk == IDENTIFIER){
-		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+		if(settings.tokens) { token_print("identifier", BOTH); }
 	} else {
 		compiler_error(44, "Could Not Find Class Name or Subroutine Name at This Location", pS, pC, pT);
 	}
@@ -52,7 +56,7 @@ void parse_class()
 	}
 
 	if (tk == SYMBOL){
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(44, "Could Not Find Class Name or Subroutine Name at This Location", pS, pC, pT);
 	}
@@ -79,15 +83,23 @@ void parse_class()
 
 	parse_subroutine();
 
-	if(settings.tokens) { printf("</class>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("class", CLOSE);
+	}
 }
 
 void parse_class_var_dec()
 {
-	if(settings.tokens) { printf("<classVarDec>\n"); }
+	if(settings.tokens)
+	{
+		token_print("classVarDec", OPEN);
+		space_count++;
+	}
 
 	/* look for 'static' or 'field' */
-	if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+	if(settings.tokens) { token_print("keyword", BOTH); }
 	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
@@ -98,10 +110,10 @@ void parse_class_var_dec()
 
 	/* look for type */
 	if(tk == IDENTIFIER) {
-		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+		if(settings.tokens) { token_print("identifier", BOTH); }
 	} else if (tk == KEYWORD) {
 		if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0) {
-			if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+			if(settings.tokens) { token_print("keyword", BOTH); }
 		} else {
 			compiler_error(41, "Token Must be Data Type.", pS, pC, pT);
 		}
@@ -118,7 +130,7 @@ void parse_class_var_dec()
 		compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
 	}
 	if(tk == IDENTIFIER) {
-		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+		if(settings.tokens) { token_print("identifier", BOTH); }
 	} else {
 		compiler_error(42, "Token Must be Variable Name", pS, pC, pT);
 	}
@@ -134,7 +146,7 @@ void parse_class_var_dec()
 
 	if(*pT == ',') {
 		do {
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 			if(has_more_tokens(pC) == true)
 			{
 				pC = advance(pC, pT);
@@ -143,7 +155,7 @@ void parse_class_var_dec()
 				compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
 			}
 			if(tk == IDENTIFIER) {
-				if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+				if(settings.tokens) { token_print("identifier", BOTH); }
 			} else {
 				compiler_error(42, "Token Must be Variable Name", pS, pC, pT);
 			}
@@ -158,22 +170,30 @@ void parse_class_var_dec()
 	}
 
 	if(*pT == ';') {
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(33, "Could Not Find ';' Symbol At This Location", pS, pC, pT);
 	}
 
-	if(settings.tokens) { printf("</classVarDec>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("classVarDec", CLOSE);
+	}
 }
 
 void parse_subroutine()
 {
-	if(settings.tokens) { printf("<subroutineDec>\n"); }
+	if(settings.tokens)
+	{
+		token_print("subroutineDec", OPEN);
+		space_count++;
+	}
 
 	if(tk == KEYWORD) {
 		if(strcmp(pT, "constructor") == 0 || strcmp(pT, "function") == 0 || strcmp(pT, "method") == 0)
 		{
-			if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+			if(settings.tokens) { token_print("keyword", BOTH); }
 		} else {
 			compiler_error(8, "Incorrect Token Found: Must be 'constructor', 'function', or 'method'", pS, pC, pT);
 		}
@@ -188,9 +208,9 @@ void parse_subroutine()
 		{
 			if(strcmp(pT, "void") == 0)
 			{
-				if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+				if(settings.tokens) { token_print("keyword", BOTH); }
 			} else {
-				if(settings.tokens) { printf("\t<type>%s</type>\n", pT); }
+				if(settings.tokens) { token_print("identifier", BOTH); }
 			}
 		} else {
 			compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
@@ -206,7 +226,7 @@ void parse_subroutine()
 		tk = token_type(pT);
 		if(tk == IDENTIFIER)
 		{
-			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+			if(settings.tokens) { token_print("identifier", BOTH); }
 		} else {
 			compiler_error(9, "Could Not Complete Parse Tree of Subroutine. Incomplete Program", pS, pC, pT);
 		}
@@ -221,7 +241,7 @@ void parse_subroutine()
 		tk = token_type(pT);
 		if(*pT == '(')
 		{
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 			parse_params();
 		} else {
 			compiler_error(12, "Parameter List for Function Missing", pS, pC, pT);
@@ -233,7 +253,12 @@ void parse_subroutine()
 	/* look for end of parameter list */
 	if(*pT == ')')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n<subroutineBody>\n", pT); }
+		if(settings.tokens)
+		{
+			token_print("symbol", BOTH);
+			token_print("subroutineBody", OPEN);
+			space_count++;
+		}
 	} else {
 		compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
 	}
@@ -245,7 +270,7 @@ void parse_subroutine()
 		tk = token_type(pT);
 		if(*pT == '{')
 		{
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 			if(has_more_tokens(pC) == true)
 			{
 				pC = advance(pC, pT);
@@ -261,12 +286,18 @@ void parse_subroutine()
 
 	parse_statements();
 
-	if(settings.tokens) { printf("</subroutineBody>\n</subroutineDec>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("subroutineBody", CLOSE);
+		space_count--;
+		token_print("subroutineDec", CLOSE);
+	}
 }
 
 void parse_params()
 {
-	if(*pT == '(') { if(settings.tokens) { printf("<parameterList>\n"); } }
+	if(*pT == '(') { if(settings.tokens) { token_print("parameterList", OPEN); space_count++; } }
 
 	/* look for datatype in parameter list */
 	if(has_more_tokens(pC) == true)
@@ -276,11 +307,18 @@ void parse_params()
 		if(tk == KEYWORD) {
 			if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0)
 			{
-				if(settings.tokens) { printf("\t<keyword>%s</keyword>\n", pT); }
+				if(settings.tokens) { token_print("keyword", BOTH); }
 			} else {
 				compiler_error(14, "Incorrect Token Type in Parameter List. Looking for Datatype name.", pS, pC, pT);
 			}
-		} else if(tk == SYMBOL && *pT == ')') { if(settings.tokens) { printf("</parameterList>\n"); } return; }
+		} else if(tk == SYMBOL && *pT == ')') {
+			if(settings.tokens)
+			{
+				space_count--;
+				token_print("parameterList", CLOSE);
+			}
+			return;
+		}
 	} else {
 		compiler_error(13, "Could Not Complete Parameter List for Function", pS, pC, pT);
 	}
@@ -291,7 +329,7 @@ void parse_params()
 		pC = advance(pC, pT);
 		tk = token_type(pT);
 		if(tk == IDENTIFIER) {
-			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+			if(settings.tokens) { token_print("identifier", BOTH); }
 		} else {
 			compiler_error(15, "Incorrect Token Type in Parameter List. Looking for Variable Identifier.", pS, pC, pT);
 		}
@@ -305,10 +343,14 @@ void parse_params()
 		pC = advance(pC, pT);
 		tk = token_type(pT);
 		if(*pT == ',') {
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 			parse_params();
 		} else if (*pT == ')') { /* exit parse_params */
-			if(settings.tokens) { printf("</parameterList>\n"); }
+			if(settings.tokens)
+			{
+				space_count--;
+				token_print("parameterList", CLOSE);
+			}
 			return;
 		} else {
 			compiler_error(16, "Incorrect Token Type in Parameter List. Looking for ',' or ')'", pS, pC, pT);
@@ -323,7 +365,11 @@ void parse_var_dec()
 	/* look for token named 'var' */
 	if(strcmp(pT, "var") == 0)
 	{
-		if(settings.tokens) { printf("<varDec>\n\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens)
+		{
+			token_print("varDec", OPEN);
+			token_print("symbol", BOTH);
+		}
 	} else { return; }
 
 	/* look for variable data type */
@@ -333,10 +379,10 @@ void parse_var_dec()
 		tk = token_type(pT);
 		if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0 || strcmp(pT, "Array") == 0)
 		{
-			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+			if(settings.tokens) { token_print("identifier", BOTH); }
 
 		} else if (tk == IDENTIFIER) { /* could also be a custom class name */
-			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+			if(settings.tokens) { token_print("identifier", BOTH); }
 		} else {
 			compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
 		}
@@ -353,7 +399,7 @@ void parse_var_dec()
 		}
 		if(tk == IDENTIFIER)
 		{
-			if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+			if(settings.tokens) { token_print("identifier", BOTH); }
 		}
 
 		if(has_more_tokens(pC) == true)
@@ -365,7 +411,7 @@ void parse_var_dec()
 		}
 		if(tk == SYMBOL)
 		{
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 		}
 	} while (*pT == ',');
 
@@ -381,7 +427,11 @@ void parse_var_dec()
 
 void parse_statements()
 {
-	if(settings.tokens) { printf("<statements>\n"); }
+	if(settings.tokens)
+	{
+		token_print("statements", OPEN);
+		space_count++;
+	}
 	do {
 		if(strcmp(pT, "let") == 0)
 		{
@@ -408,12 +458,21 @@ void parse_statements()
 
 	} while (strcmp(pT, "let") == 0 || strcmp(pT, "if") == 0 || strcmp(pT, "while") == 0 || \
 			 strcmp(pT, "do") == 0  || strcmp(pT, "return") == 0 );
-	if(settings.tokens) { printf("</statements>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("statements", CLOSE);
+	}
 }
 
 void parse_do()
 {
-	if(settings.tokens) { printf("<doStatement>\n\t<keyword>do</keyword>\n"); }
+	if(settings.tokens)
+	{
+		token_print("doStatement", OPEN);
+		space_count++;
+		token_print("keyword", BOTH);
+	}
 
 	if(has_more_tokens(pC) == true)
 	{
@@ -432,18 +491,28 @@ void parse_do()
 
 	if(*pT == ';')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(33, "Could Not Find ';' Symbol At This Location.", pS, pC, pT);
 	}
 
-	if(settings.tokens) { printf("</doStatement>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("doStatement", CLOSE);
+	}
 }
 
 void parse_let()
 {
 	int found_array = 0;
-	if(settings.tokens) { printf("<letStatement>\n\t<keyword>let</keyword>\n"); }
+	if(settings.tokens)
+	{
+		token_print("letStatement", OPEN);
+		space_count++;
+		token_print("keyword", BOTH);
+	}
+
 	if(has_more_tokens(pC) == true)
 	{
 		pC = advance(pC, pT);
@@ -455,7 +524,7 @@ void parse_let()
 	/* look for an identifier - must be a variable name */
 	if(tk == IDENTIFIER)
 	{
-		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+		if(settings.tokens) { token_print("identifier", BOTH); }
 	} else {
 		compiler_error(31, "Could Not Find Identifier At This Location", pS, pC, pT);
 	}
@@ -472,7 +541,7 @@ void parse_let()
 	if(*pT == '[')
 	{
 		found_array++;
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
@@ -486,7 +555,7 @@ void parse_let()
 	/* should be closing ']' here if variable was array */
 	if(found_array && *pT == ']')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
@@ -498,7 +567,7 @@ void parse_let()
 
 	if(*pT == '=')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(32, "Could Not Find '=' Symbol At This Location", pS, pC, pT);
 	}
@@ -515,17 +584,26 @@ void parse_let()
 
 	if(*pT == ';')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(33, "Could Not Find ';' Symbol At This Location", pS, pC, pT);
 	}
 
-	if(settings.tokens) { printf("</letStatement>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("letStatement", CLOSE);
+	}
 }
 
 void parse_while()
 {
-	if(settings.tokens) { printf("<whileStatement>\n\t<identifier>%s</identifier>\n", pT); }
+	if(settings.tokens)
+	{
+		token_print("whileStatement", OPEN);
+		space_count++;
+		token_print("identifier", BOTH);
+	}
 
 	if(has_more_tokens(pC) == true)
 	{
@@ -537,7 +615,7 @@ void parse_while()
 
 	if(*pT == '(')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(39, "Could Not Find '(' Symbol At This Location", pS, pC, pT);
 	}
@@ -554,7 +632,7 @@ void parse_while()
 
 	if(*pT == ')')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(38, "Could Not Find ')' Symbol At This Location", pS, pC, pT);
 	}
@@ -569,7 +647,7 @@ void parse_while()
 
 	if(*pT == '{')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(45, "Could Not Find '{' Symbol At This Location", pS, pC, pT);
 	}
@@ -586,17 +664,26 @@ void parse_while()
 
 	if(*pT == '}')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(46, "Could Not Find '}' Symbol At This Location", pS, pC, pT);
 	}
 
-	if(settings.tokens) { printf("</whileStatement>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("whileStatement", CLOSE);
+	}
 }
 
 void parse_return()
 {
-	if(settings.tokens) { printf("<returnStatement>\n\t<identifier>%s</identifier>\n", pT); }
+	if(settings.tokens)
+	{
+		token_print("returnStatement", OPEN);
+		space_count++;
+		token_print("identifier", BOTH);
+	}
 
 	/* look for ';' */
 	if(has_more_tokens(pC) == true)
@@ -611,16 +698,25 @@ void parse_return()
 
 	if(*pT == ';')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(33, "Could Not Find ';' Symbol At This Location", pS, pC, pT);
 	}
-	if(settings.tokens) { printf("</returnStatement>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("returnStatement", CLOSE);
+	}
 }
 
 void parse_if()
 {
-	if(settings.tokens) { printf("<ifStatement>\n\t<identifier>%s</identifier>\n", pT); }
+	if(settings.tokens)
+	{
+		token_print("ifStatement", OPEN);
+		space_count++;
+		token_print("identifier", BOTH);
+	}
 
 	if(has_more_tokens(pC) == true)
 	{
@@ -632,7 +728,7 @@ void parse_if()
 
 	if(*pT == '(')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(39, "Could Not Find '(' Symbol At This Location", pS, pC, pT);
 	}
@@ -649,7 +745,7 @@ void parse_if()
 
 	if(*pT == ')')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(38, "Could Not Find ')' Symbol At This Location", pS, pC, pT);
 	}
@@ -664,7 +760,7 @@ void parse_if()
 
 	if(*pT == '{')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(45, "Could Not Find '{' Symbol At This Location", pS, pC, pT);
 	}
@@ -681,22 +777,30 @@ void parse_if()
 
 	if(*pT == '}')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(46, "Could Not Find '}' Symbol At This Location", pS, pC, pT);
 	}
 
-	if(settings.tokens) { printf("</ifStatement>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("ifStatement", CLOSE);
+	}
 }
 
 void parse_expression()
 {
-	if(settings.tokens) { printf("\t<expression>\n"); }
+	if(settings.tokens)
+	{
+		token_print("expression", OPEN);
+		space_count++;
+	}
 	parse_term();
 
 	if(strchr(BINARY_OP, *pT) != NULL)
 	{
-		if(settings.tokens) { printf("\t<operator>%s</operator>\n", pT); }
+		if(settings.tokens) { token_print("operator", BOTH); }
 			if(has_more_tokens(pC) == true)
 			{
 				pC = advance(pC, pT);
@@ -706,15 +810,23 @@ void parse_expression()
 			}
 			parse_expression();
 	}
-	if(settings.tokens) { printf("\t</expression>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("expression", CLOSE);
+	}
 }
 
 void parse_term()
 {
-	if(settings.tokens) { printf("<term>\n"); }
+	if(settings.tokens)
+	{
+		token_print("term", OPEN);
+		space_count++;
+	}
 	if(tk == INT_CONST)
 	{
-		if(settings.tokens) { printf("\t<intConst>%s</intConst>\n", pT); }
+		if(settings.tokens) { token_print("intConst", BOTH); }
 		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
@@ -727,7 +839,7 @@ void parse_term()
 
 	if(strchr(UNARY_OP, *pT) != NULL)
 	{
-		if(settings.tokens) { printf("<unaryOperator>%s</unaryOperator>\n", pT); }
+		if(settings.tokens) { token_print("unaryOperator", BOTH); }
 		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
@@ -740,7 +852,7 @@ void parse_term()
 
 	if(tk == IDENTIFIER)
 	{
-		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+		if(settings.tokens) { token_print("identifier", BOTH); }
 
 		if(has_more_tokens(pC) == true)
 		{
@@ -754,7 +866,7 @@ void parse_term()
 
 	if(tk == KEYWORD)
 	{
-		if(settings.tokens) { printf("\t<keyword>%s</keywordr>\n", pT); }
+		if(settings.tokens) { token_print("keyword", BOTH); }
 
 		if(has_more_tokens(pC) == true)
 		{
@@ -768,7 +880,7 @@ void parse_term()
 	switch(*pT)
 	{
 		case '[':
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 
 			if(has_more_tokens(pC) == true)
 			{
@@ -780,7 +892,7 @@ void parse_term()
 			parse_expression();
 			if(*pT == ']')
 			{
-				if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+				if(settings.tokens) { token_print("symbol", BOTH); }
 				/* parse_expression(); */
 				} else {
 					compiler_error(26, "Improperly Terminated Array Expression. Symbol ']' Required at this Location.", pS, pC, pT);
@@ -795,7 +907,7 @@ void parse_term()
 			}
 			break;
 		case '(':
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 
 			if(has_more_tokens(pC) == true)
 			{
@@ -808,7 +920,7 @@ void parse_term()
 			parse_expression();
 
 			if (*pT == ')') {
-				if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+				if(settings.tokens) { token_print("symbol", BOTH); }
 			} else {
 				compiler_error(38, "Could Not Find Symbol ')' At This Location", pS, pC, pT);
 			}
@@ -822,7 +934,7 @@ void parse_term()
 			}
 			break;
 		case '.':
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 
 			if(has_more_tokens(pC) == true)
 			{
@@ -837,15 +949,19 @@ void parse_term()
 		default:
 			return;
 	}
-	if(settings.tokens) { printf("</term>\n"); }
+	if(settings.tokens)
+	{
+		space_count--;
+		token_print("term", CLOSE);
+	}
 }
 
 void parse_subroutine_call()
 {
-	if(settings.tokens) { printf("\t<subroutineCall>\n"); }
+	if(settings.tokens) { token_print("subroutineCall", OPEN); }
 	if(tk == IDENTIFIER)
 	{
-		if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+		if(settings.tokens) { token_print("identifier", BOTH); }
 	} else {
 		compiler_error(35, "Could Not Find Class Name or Subroutine Name at This Location", pS, pC, pT);
 	}
@@ -859,7 +975,7 @@ void parse_subroutine_call()
 	}
 
 	if (*pT == '.') {
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 			if(has_more_tokens(pC) == true)
 			{
 				pC = advance(pC, pT);
@@ -869,7 +985,7 @@ void parse_subroutine_call()
 			}
 			if(tk == IDENTIFIER)
 			{
-				if(settings.tokens) { printf("\t<identifier>%s</identifier>\n", pT); }
+				if(settings.tokens) { token_print("identifier", BOTH); }
 			} else {
 				compiler_error(37, "Could Not Find Method Name or Subroutine Name at This Location", pS, pC, pT);
 			}
@@ -888,7 +1004,7 @@ void parse_subroutine_call()
 
 	if(*pT == '(')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(39, "Could Not Find Symbol '(' At This Location", pS, pC, pT);
 	}
@@ -905,7 +1021,7 @@ void parse_subroutine_call()
 
 	if(*pT == ')')
 	{
-		if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(38, "Could Not Find Symbol ')' At This Location", pS, pC, pT);
 	}
@@ -918,17 +1034,17 @@ void parse_subroutine_call()
 		compiler_error(24, "Could Not Complete Subroutine Call. Incomplete Program", pS, pC, pT);
 	}
 
-	if(settings.tokens) { printf("\t</subroutineCall>\n"); }
+	if(settings.tokens) { token_print("subroutineCall", CLOSE); }
 }
 
 void parse_expr_lst()
 {
-	if(settings.tokens) { printf("\t<expressionList>\n"); }
+	if(settings.tokens) { token_print("expressionList", OPEN); }
 	while(*pT != ')')
 	{
 		if(*pT == ',')
 		{
-			if(settings.tokens) { printf("\t<symbol>%s</symbol>\n", pT); }
+			if(settings.tokens) { token_print("symbol", BOTH); }
 			if(has_more_tokens(pC) == true)
 			{
 					pC = advance(pC, pT);
@@ -940,5 +1056,5 @@ void parse_expr_lst()
 			parse_expression();
 		}
 	}
-	if(settings.tokens) { printf("\t</expressionList>\n"); }
+	if(settings.tokens) { token_print("expressionList", CLOSE); }
 }
