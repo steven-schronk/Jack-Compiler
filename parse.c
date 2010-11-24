@@ -55,7 +55,8 @@ void parse_class()
 			compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
 	}
 
-	if (tk == SYMBOL){
+	if (tk == SYMBOL)
+	{
 		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(44, "Could Not Find Class Name or Subroutine Name at This Location", pS, pC, pT);
@@ -81,7 +82,24 @@ void parse_class()
 		}
 	}
 
-	parse_subroutine();
+	while(strcmp(pT, "constructor") == 0 || strcmp(pT, "function") == 0 || strcmp(pT, "method") == 0)
+	{
+		parse_subroutine();
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+		}
+	}
+
+	if(*pT == '}')
+	{
+		if(settings.tokens) { token_print("symbol", BOTH); }
+	} else {
+		compiler_error(40, "Incomplete Class Declaration", pS, pC, pT);
+	}
 
 	if(settings.tokens)
 	{
@@ -285,6 +303,13 @@ void parse_subroutine()
 	}
 
 	parse_statements();
+
+	if(*pT == '}')
+	{
+		if(settings.tokens) { token_print("symbol", BOTH); }
+	} else {
+		compiler_error(17, "Could Not Complete Subroutine. Incomplete Program", pS, pC, pT);
+	}
 
 	if(settings.tokens)
 	{
@@ -602,7 +627,7 @@ void parse_while()
 	{
 		token_print("whileStatement", OPEN);
 		space_count++;
-		token_print("identifier", BOTH);
+		token_print("keyword", BOTH);
 	}
 
 	if(has_more_tokens(pC) == true)
@@ -682,7 +707,7 @@ void parse_return()
 	{
 		token_print("returnStatement", OPEN);
 		space_count++;
-		token_print("identifier", BOTH);
+		token_print("keyword", BOTH);
 	}
 
 	/* look for ';' */
@@ -715,7 +740,7 @@ void parse_if()
 	{
 		token_print("ifStatement", OPEN);
 		space_count++;
-		token_print("identifier", BOTH);
+		token_print("keyword", BOTH);
 	}
 
 	if(has_more_tokens(pC) == true)
@@ -824,6 +849,7 @@ void parse_term()
 		token_print("term", OPEN);
 		space_count++;
 	}
+
 	if(tk == INT_CONST)
 	{
 		if(settings.tokens) { token_print("intConst", BOTH); }
@@ -850,9 +876,9 @@ void parse_term()
 		parse_term();
 	}
 
-	if(tk == IDENTIFIER)
+	if(tk == KEYWORD)
 	{
-		if(settings.tokens) { token_print("identifier", BOTH); }
+		if(settings.tokens) { token_print("keyword", BOTH); }
 
 		if(has_more_tokens(pC) == true)
 		{
@@ -861,12 +887,11 @@ void parse_term()
 		} else {
 			compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
 		}
-		 parse_term();
 	}
 
-	if(tk == KEYWORD)
+	if(tk == IDENTIFIER)
 	{
-		if(settings.tokens) { token_print("keyword", BOTH); }
+		if(settings.tokens) { token_print("identifier", BOTH); }
 
 		if(has_more_tokens(pC) == true)
 		{
@@ -946,9 +971,8 @@ void parse_term()
 
 			parse_subroutine_call();
 			break;
-		default:
-			return;
 	}
+
 	if(settings.tokens)
 	{
 		space_count--;
@@ -958,7 +982,6 @@ void parse_term()
 
 void parse_subroutine_call()
 {
-	if(settings.tokens) { token_print("subroutineCall", OPEN); }
 	if(tk == IDENTIFIER)
 	{
 		if(settings.tokens) { token_print("identifier", BOTH); }
@@ -1033,8 +1056,6 @@ void parse_subroutine_call()
 	} else {
 		compiler_error(24, "Could Not Complete Subroutine Call. Incomplete Program", pS, pC, pT);
 	}
-
-	if(settings.tokens) { token_print("subroutineCall", CLOSE); }
 }
 
 void parse_expr_lst()
