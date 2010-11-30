@@ -736,6 +736,8 @@ void parse_return()
 
 void parse_if()
 {
+	char *pTemp = NULL;
+
 	if(settings.tokens)
 	{
 		token_print("ifStatement", OPEN);
@@ -802,9 +804,57 @@ void parse_if()
 
 	if(*pT == '}')
 	{
+		pTemp = pC; /* store pointer to where we are - in case no 'else' clause exists */
 		if(settings.tokens) { token_print("symbol", BOTH); }
 	} else {
 		compiler_error(46, "Could Not Find '}' Symbol At This Location", pS, pC, pT);
+	}
+
+	/* Look forward and see if 'else' clause is there*/
+	if(has_more_tokens(pC) == true)
+	{
+		pC = advance(pC, pT);
+		tk = token_type(pT);
+	} else {
+		compiler_error(47, "Could Not Complete If Statement. Incomplete Program", pS, pC, pT);
+	}
+
+	if(strcmp(pT, "else") == 0)
+	{
+		if(settings.tokens) { token_print("keyword", BOTH); };
+
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(47, "Could Not Complete If Statement. Incomplete Program", pS, pC, pT);
+		}
+
+		if(*pT == '{')
+		{
+			if(settings.tokens) { token_print("symbol", BOTH); }
+		} else {
+			compiler_error(45, "Could Not Find '{' Symbol At This Location", pS, pC, pT);
+		}
+
+		parse_statements();
+
+		if(*pT == '}')
+		{
+			if(settings.tokens) { token_print("symbol", BOTH); }
+		} else {
+			compiler_error(46, "Could Not Find '}' Symbol At This Location", pS, pC, pT);
+		}
+	} else {
+		pC = pTemp-1; /* rewind back to end of 'if' statement */
+		if(has_more_tokens(pC) == true)
+		{
+			pC = advance(pC, pT);
+			tk = token_type(pT);
+		} else {
+			compiler_error(47, "Could Not Complete If Statement. Incomplete Program", pS, pC, pT);
+		}
 	}
 
 	if(settings.tokens)
