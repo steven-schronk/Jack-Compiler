@@ -273,7 +273,7 @@ int test_parse_expression()
 	pC = advance(pC, pT);
 	tk = token_type(pT);
 
-	parse_expression();
+	parse_expression(0);
 
 	/* pointer to code should be in correct position */
 	if(pC - source != 24) { result++; }
@@ -310,7 +310,7 @@ int test_parse_expression_keyword()
 		pC = advance(pC, pT);
 		tk = token_type(pT);
 
-		parse_expression();
+		parse_expression(0);
 
 		/* pointer to code should be in correct position */
 		if(i <= 2)
@@ -346,7 +346,7 @@ int test_parse_expression_nested_array()
 	pC = advance(pC, pT);
 	tk = token_type(pT);
 
-	parse_expression();
+	parse_expression(0);
 
 	/* pointer to code should be in correct position */
 	if(pC - source != 17) { result++; }
@@ -375,7 +375,7 @@ int test_parse_expression_nested_sub()
 	pC = advance(pC, pT);
 	tk = token_type(pT);
 
-	parse_expression();
+	parse_expression(0);
 
 	/* pointer to code should be in correct position */
 	if(pC - source != 17) { result++; }
@@ -404,7 +404,7 @@ int test_parse_expression_class_sub()
 	pC = advance(pC, pT);
 	tk = token_type(pT);
 
-	parse_expression();
+	parse_expression(0);
 
 	/* pointer to code should be in correct position */
 	if(pC - source != 22) { result++; }
@@ -433,7 +433,7 @@ int test_parse_expression_list()
 	pC = advance(pC, pT);
 	tk = token_type(pT);
 
-	parse_expression();
+	parse_expression(0);
 
 	/* pointer to code should be in correct position */
 	if(pC - source != 34) { result++; }

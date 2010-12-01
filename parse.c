@@ -393,7 +393,7 @@ void parse_var_dec()
 		if(settings.tokens)
 		{
 			token_print("varDec", OPEN);
-			token_print("symbol", BOTH);
+			token_print("keyword", BOTH);
 		}
 	} else { return; }
 
@@ -402,9 +402,9 @@ void parse_var_dec()
 	{
 		pC = advance(pC, pT);
 		tk = token_type(pT);
-		if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0 || strcmp(pT, "Array") == 0)
+		if(strcmp(pT, "int") == 0 || strcmp(pT, "char") == 0 || strcmp(pT, "boolean") == 0)
 		{
-			if(settings.tokens) { token_print("identifier", BOTH); }
+			if(settings.tokens) { token_print("keyword", BOTH); }
 
 		} else if (tk == IDENTIFIER) { /* could also be a custom class name */
 			if(settings.tokens) { token_print("identifier", BOTH); }
@@ -447,6 +447,7 @@ void parse_var_dec()
 	} else {
 		compiler_error(17, "Could Not Complete Variable List of Subroutine. Incomplete Program", pS, pC, pT);
 	}
+	if(settings.tokens) { token_print("varDec", CLOSE); }
 	parse_var_dec();
 }
 
@@ -574,7 +575,7 @@ void parse_let()
 		} else {
 			compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
 		}
-		parse_expression();
+		parse_expression(0);
 	}
 
 	/* should be closing ']' here if variable was array */
@@ -605,7 +606,7 @@ void parse_let()
 		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
 	}
 
-	parse_expression();
+	parse_expression(0);
 
 	if(*pT == ';')
 	{
@@ -653,7 +654,7 @@ void parse_while()
 		compiler_error(47, "Could Not Complete While Statement. Incomplete Program", pS, pC, pT);
 	}
 
-	parse_expression();
+	parse_expression(0);
 
 	if(*pT == ')')
 	{
@@ -719,7 +720,7 @@ void parse_return()
 		compiler_error(20, "Could Not Complete Let Statement. Incomplete Program", pS, pC, pT);
 	}
 
-	if (*pT != ';') { parse_expression(); }
+	if (*pT != ';') { parse_expression(0); }
 
 	if(*pT == ';')
 	{
@@ -768,7 +769,7 @@ void parse_if()
 		compiler_error(47, "Could Not Complete If Statement. Incomplete Program", pS, pC, pT);
 	}
 
-	parse_expression();
+	parse_expression(0);
 
 	if(*pT == ')')
 	{
@@ -864,18 +865,19 @@ void parse_if()
 	}
 }
 
-void parse_expression()
+void parse_expression(int count)
 {
-	if(settings.tokens)
+	if(settings.tokens && count == 0)
 	{
 		token_print("expression", OPEN);
 		space_count++;
 	}
+	count++;
 	parse_term();
 
 	if(strchr(BINARY_OP, *pT) != NULL)
 	{
-		if(settings.tokens) { token_print("operator", BOTH); }
+		if(settings.tokens) { token_print("symbol", BOTH); }
 			if(has_more_tokens(pC) == true)
 			{
 				pC = advance(pC, pT);
@@ -883,9 +885,9 @@ void parse_expression()
 			} else {
 				compiler_error(34, "Could Not Parse Expression. Incomplete Program", pS, pC, pT);
 			}
-			parse_expression();
+			parse_expression(count);
 	}
-	if(settings.tokens)
+	if(settings.tokens && count == 1)
 	{
 		space_count--;
 		token_print("expression", CLOSE);
@@ -902,13 +904,19 @@ void parse_term()
 
 	if(tk == INT_CONST)
 	{
-		if(settings.tokens) { token_print("intConst", BOTH); }
+		if(settings.tokens) { token_print("integerConstant", BOTH); }
 		if(has_more_tokens(pC) == true)
 		{
 			pC = advance(pC, pT);
 			tk = token_type(pT);
 		} else {
 			compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
+		}
+
+		if(settings.tokens)
+		{
+			space_count--;
+			token_print("term", CLOSE);
 		}
 		return;
 	}
@@ -964,11 +972,11 @@ void parse_term()
 			} else {
 				compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
 			}
-			parse_expression();
+			parse_expression(0);
 			if(*pT == ']')
 			{
 				if(settings.tokens) { token_print("symbol", BOTH); }
-				/* parse_expression(); */
+				/* parse_expression(0); */
 				} else {
 					compiler_error(26, "Improperly Terminated Array Expression. Symbol ']' Required at this Location.", pS, pC, pT);
 			}
@@ -992,7 +1000,7 @@ void parse_term()
 				compiler_error(25, "Could Not Complete Term. Incomplete Program", pS, pC, pT);
 			}
 
-			parse_expression();
+			parse_expression(0);
 
 			if (*pT == ')') {
 				if(settings.tokens) { token_print("symbol", BOTH); }
@@ -1124,7 +1132,7 @@ void parse_expr_lst()
 				compiler_error(24, "Could Not Complete Expression List. Incomplete Program", pS, pC, pT);
 			}
 		} else {
-			parse_expression();
+			parse_expression(0);
 		}
 	}
 	if(settings.tokens) { token_print("expressionList", CLOSE); }

@@ -173,13 +173,25 @@ void token_print(char *s, ptoken print_spec)
 	switch(print_spec)
 	{
 		case OPEN:
-			printf("<%s>\n", s);
+			printf("<%s>\r\n", s);
 			break;
 		case CLOSE:
-			printf("</%s>\n", s);
+			printf("</%s>\r\n", s);
 			break;
 		case BOTH:
-			printf("<%s> %s </%s>\n", s, pT, s);
+			/* convert '<' and '>' to HTML */
+			if(*pT == '<')
+			{
+				printf("<%s> &lt; </%s>\r\n", s, s);
+			} else if (*pT == '>')
+			{
+				printf("<%s> &gt; </%s>\r\n", s, s);
+			} else if (*pT == '&')
+			{
+				printf("<%s> &amp; </%s>\r\n", s, s);
+			} else {
+				printf("<%s> %s </%s>\r\n", s, pT, s);
+			}
 			break;
 	}
 }

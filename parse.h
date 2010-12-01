@@ -70,7 +70,7 @@ void parse_if();
 /*
 * Compiles and expression.
 */
-void parse_expression();
+void parse_expression(int count);
 
 /*
 * Compiles a term.
