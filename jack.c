@@ -15,6 +15,7 @@ char *pS = NULL;
 token tk;
 ttype ttyp;
 int space_count = 0; /* number of spaces before printing token */
+extern struct settings_t settings;
 
 void usage(void)
 {

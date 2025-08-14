@@ -11,6 +11,8 @@
 #define PASSED 0
 #define FAILED 1
 
+struct settings_t settings;
+
 void test_msg_start(char *msg)
 {
 	int msg_length = strlen(msg);

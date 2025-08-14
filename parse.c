@@ -9,6 +9,8 @@
 #include "parse.h"
 #include "token.h"
 
+extern struct settings_t settings;
+
 void parse_class()
 {
 	if(settings.tokens)

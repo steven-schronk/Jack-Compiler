@@ -2,6 +2,7 @@
 #define PARSE_H_
 
 #include "token.h"
+#include "test.h"
 
 extern char *pS;
 extern char *pC;

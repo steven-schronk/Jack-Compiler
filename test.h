@@ -3,6 +3,13 @@
 
 extern char *keywords[];
 
+struct settings_t
+{
+        int verbose;
+        int tokens;
+        int test;
+};
+
 /* These are the unit tests for the compiler. */
 
 /* Prints standardized message about the type of test */
